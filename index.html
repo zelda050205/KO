@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N2长难句交互拆解交互训练系统 - 完整语库版</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --sidebar-bg: #edf2f0;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary: #34495e;
+            --success: #2ecc71;
+            --error: #e74c3c;
+            --accent-red: #e74c3c;
+            --accent-blue: #3498db;
+            --accent-purple: #9b59b6;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 左侧课表导航栏 */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid #dcdde1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .sidebar-header {
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+        }
+        .sidebar-header h2 { font-size: 16px; margin: 0; font-weight: 600; }
+        .sidebar-header p { font-size: 12px; margin: 5px 0 0 0; opacity: 0.8; }
+        .menu-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .menu-item {
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #57606f;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .menu-item:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
+        .menu-item.active { background: var(--card-bg); color: var(--accent-purple); font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* 右侧核心主练区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            padding: 30px 40px;
+        }
+
+        .container { max-width: 900px; width: 100%; margin: 0 auto; }
+        
+        /* 顶部功能钮 */
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .grammar-badge {
+            background: #e1b12c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .util-btn {
+            background: white;
+            border: 1px solid #ced6e0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .util-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* 状态进度条 */
+        .steps-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: #eef2f5;
+            padding: 5px;
+            border-radius: 30px;
+        }
+        .step-indicator {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: bold;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: not-allowed;
+        }
+        .step-indicator.active { background: var(--card-bg); color: var(--primary); box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+        .step-indicator.completed { color: var(--success); }
+
+        /* 主操练卡片 */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 35px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        .instruction-box {
+            background: #fffdf9;
+            border-left: 4px solid #f1c40f;
+            padding: 12px 18px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #57606f;
+        }
+
+        /* 核心日文区（纯黑、无剧透原型） */
+        .sentence-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+            font-size: 21px;
+            line-height: 2.2;
+            margin-bottom: 35px;
+            padding: 10px 0;
+        }
+        .word-token {
+            color: var(--text-main);
+            padding: 1px 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .word-token:hover { background-color: #f1f2f6; }
+
+        /* 状态变换样式 */
+        .mist-mode .word-token:not(.main-stem):not(.predicate-marked) { opacity: 0.25; }
+        
+        .word-token.predicate-marked {
+            background-color: #fadbd8 !important;
+            border: 1px solid var(--accent-red) !important;
+            color: var(--accent-red) !important;
+            opacity: 1 !important;
+            position: relative;
+        }
+        .word-token.predicate-marked::after {
+            content: '🚩'; position: absolute; top: -14px; right: -4px; font-size: 10px;
+        }
+        .word-token.main-stem { color: var(--accent-blue) !important; font-weight: bold; opacity: 1 !important; }
+
+        /* 步骤三样式 */
+        .modifier-wrapper {
+            display: inline-flex;
+            align-items: center;
+            border: 2px dashed #d7bde2;
+            padding: 3px 6px;
+            border-radius: 8px;
+            margin: 3px;
+            background-color: #fdfbfe;
+            transition: all 0.3s;
+        }
+        .modifier-wrapper.collapsed {
+            background: #9b59b6; color: white !important; border-style: solid; border-color: #8e44ad;
+        }
+        .collapse-btn {
+            background: #9b59b6; color: white; border: none; border-radius: 50%;
+            width: 18px; height: 18px; font-size: 12px; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-right: 5px; font-weight: bold; flex-shrink: 0;
+        }
+        .modifier-wrapper.collapsed .word-token { display: none; }
+        .modifier-wrapper.collapsed .collapsed-text { display: inline !important; font-size: 13px; color: white; font-weight: bold; }
+        .collapsed-text { display: none; }
+
+        /* 底部动态同步翻译框 */
+        .translation-box {
+            background: #f8f9fa;
+            border-top: 2px solid #eef2f5;
+            padding: 20px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            min-height: 60px;
+            font-size: 16px;
+        }
+        .translation-placeholder { color: var(--text-muted); font-style: italic; }
+
+        /* 步骤四卡片区 */
+        .blocks-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; padding: 15px; background: #f1f2f6; border-radius: 8px; }
+        .translation-block {
+            background: white; border: 1px solid #d2d2d2; padding: 6px 14px; border-radius: 20px;
+            cursor: pointer; font-size: 14px; transition: all 0.2s; user-select: none;
+        }
+        .translation-block:hover { border-color: var(--accent-purple); transform: translateY(-1px); }
+        .translation-block.used { opacity: 0.3; cursor: not-allowed; transform: none; }
+        
+        .slots-container { line-height: 2.8; font-size: 17px; }
+        .trans-slot { display: inline-block; min-width: 90px; border-bottom: 2px dashed #bdc3c7; margin: 0 6px; text-align: center; color: var(--accent-purple); font-weight: bold; }
+        .grammar-highlight { color: #e67e22; font-weight: bold; border-bottom: 2px solid #e67e22; }
+
+        .control-panel { display: flex; justify-content: flex-end; margin-top: 15px; }
+        .next-btn {
+            background: var(--success); color: white; border: none; padding: 10px 25px;
+            font-size: 14px; border-radius: 25px; cursor: pointer; font-weight: bold; display: none;
+        }
+        .next-btn:hover { background: #27ae60; }
+
+        /* 气泡通知 */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            padding: 10px 25px; border-radius: 30px; color: white; font-weight: bold;
+            font-size: 13px; z-index: 1000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<!-- 左侧课件大纲 -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>JLPT N2 核心语库目录</h2>
+        <p>全自动语法长难句切片</p>
+    </div>
+    <div class="menu-list" id="menu-container"></div>
+</div>
+
+<!-- 右侧主练习操练舱 -->
+<div class="main-content">
+    <div class="container">
+        <div class="top-actions">
+            <div>
+                <span class="grammar-badge" id="current-grammar-label">载入中...</span>
+            </div>
+            <button class="util-btn" onclick="loadRandomTask()">🎲 随机刷一题</button>
+        </div>
+
+        <div class="steps-bar">
+            <div class="step-indicator active" id="indicator-1">步骤一：锁定谓语</div>
+            <div class="step-indicator" id="indicator-2">步骤二：识别主干</div>
+            <div class="step-indicator" id="indicator-3">步骤三：修饰大变身</div>
+            <div class="step-indicator" id="indicator-4">步骤四：逆向重组</div>
+        </div>
+
+        <div class="card">
+            <div class="instruction-box" id="instruction"></div>
+            <div class="sentence-area" id="sentence-container"></div>
+            <div class="translation-box" id="translation-container"></div>
+            <div class="blocks-container" id="blocks-area" style="display: none;"></div>
+        </div>
+
+        <div class="control-panel">
+            <button class="next-btn" id="next-stage-btn" onclick="advanceStage()">进入下一步</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 注入庞大而完整的语库
+    const itemBank = [
+      {"id":"1-1","grammar":"～際に","sentence":"新商品を海外で発売する際に、现地の法规制や消费者の嗜好を绵密に调查しておかないと、予期せぬトラブルが生じる可能性が高いということを、过去の失败事例から学んだ。","translation":"在海外发售新产品时，如果不事先仔细调查当地法规和消费者喜好，从过去的失败案例中我们得知，发生意想不到的麻烦的可能性很高。"},
+      {"id":"1-2","grammar":"～に際して・～にあたって","sentence":"プロジェクトの最终报告书を提出するに际して、これまでの全てのデータを再検証し、関係部署との调整を彻底的に行った上で、社长の承认を得る必要があると感じた。","translation":"在提交项目最终报告之际，我深感有必要重新验证至今所有数据，并彻底与相关部门协调之后，获得社长的批准。"},
+      {"id":"1-3","grammar":"～たとたん(に)","sentence":"会议が終わったとたんに、部长が私を呼び止めて、急遽明日のプレゼン资料を全て作り直すように指示してきたため、今夜は彻夜せざるを得なくなった。","translation":"会议刚一结束，部长就叫住我，指示我紧急重新制作明天发表的所有资料，因此今晚不得不熬夜。"},
+      {"id":"1-4","grammar":"～(か)と思うと・～(か)と思ったら","sentence":"あの若手社员は、さっきまで真剣に悩んでいたかと思うと、突然ひらめいたように笑顔で新しいアイデアを提案してきて、周囲を惊かせた。","translation":"那位年轻员工，刚才还认真苦恼着，突然好像灵光一闪，笑着提出了新想法，让周围人惊讶。"},
+      {"id":"1-5","grammar":"～か～ないかのうちに","sentence":"彼女がオフィスに到着するかしないかのうちに、クレームの电话が鸣り始め、しかもそれが连続して三件も重なったため、彼女はコートを脱ぐ暇もなく対応に追われた。","translation":"她刚到办公室，投诉电话就开始响，而且连续来了三个，她连脱外套的工夫都没有就被迫应对。"},
+      {"id":"2-1","grammar":"～最中だ","sentence":"重要な交渉の最中だというのに、相手方の担当者が突然体调不良を诉えて会议を中断せざるを得なくなり、こちらの准备してきた资料が全て无駄になった。","translation":"明明正处于重要谈判之中，对方负责人却突然声称身体不适，不得不中断会议，我们准备的资料全部白费了。"},
+      {"id":"2-2","grammar":"～うちに","sentence":"若いうちに、语学力だけでなくビジネスマナーや异文化理解も深めておかないと、グローバル化が進む今後のキャリアで大きく后れを取ることになるだろう。","translation":"趁着年轻，如果不不仅提高语言能力，还加深商务礼仪和跨文化理解，在全球化进程的今后职业生涯中将会大大落后吧。"},
+      {"id":"2-3","grammar":"～ばかりだ・～一方だ","sentence":"昨今の円安倾向は进む一方で、输入原材料のコストが上がり続けており、私たちの制造部门は利益率が下がるばかりで、打开策を早急に见つける必要に迫られている。","translation":"最近的日元贬值趋势不断加剧，进口原材料成本持续上升，我们制造部门的利润率不断下降，迫使我们急需找到突破口。"},
+      {"id":"2-4","grammar":"～(よ)うとしている","sentence":"政府は脱炭素社会を実現しようとしており、それに伴い企业には厳しい排出基準が课せられようとしているが、多くの中小企业は対応策すらまだ検討できていない。","translation":"政府正试图实现脱碳社会，随之企业将被施加严格的排放标准，但许多中小企业甚至尚未能讨论应对措施。"},
+      {"id":"2-5","grammar":"～つつある","sentence":"AI技术は日进月歩で进化しつつあり、従来のルーティンワークは徐々に自动化されつつあるため、私たちは创造性や人间関係构筑といった新たなスキルを磨く必要が高まっている。","translation":"AI技术正在日新月异地进化，传统的事务性工作正逐渐被自动化，因此我们提升创造性及人际关系构建等新技能的必要性正在增加。"},
+      {"id":"2-6","grammar":"～つつ","sentence":"彼は周末も出社して业绩回复に努めつつ、同時に社内の若手育成プログラムも自ら企画し、多忙な日々を送りながらも充実感を得ているようだ。","translation":"他周末也上班努力恢复业绩，同时自己策划公司内部的年轻人培养项目，虽然过着忙碌的日子，但似乎获得了充实感。"},
+      {"id":"3-1","grammar":"～てはじめて","sentence":"実際に现场で働いてはじめて、教科书に書いてある理论と現実のギャップの大きさを痛感し、それまで自分がいかに甘い见解を持っていたかを思い知らされた。","translation":"实际在现场工作之后，才痛感教科书上的理论与现实的巨大差距，才认识到自己之前的看法有多么天真。"},
+      {"id":"3-2","grammar":"～上で","sentence":"新システムを导入する上で、最も注意すべきは既存のデータ移行の正确性であり、その上でユーザートレーニングを彻底しなければ、かえって生産性が低下する恐れがある。","translation":"在导入新系统之际，最应注意的是现有数据迁移的准确性，而且如果不彻底进行用户培训，反而可能导致生产率下降。"},
+      {"id":"3-3","grammar":"～次第","sentence":"部长の最终承认が下り次第、すぐに外部の协力会社へ発注をかけ、納期に間に合わせるために制造ラインを増强する手配を開始する予定だ。","translation":"一旦获得部长的最终批准，将立即向外部合作公司下单，并开始安排增强生产线以赶上交货期。"},
+      {"id":"3-4","grammar":"～以来・～このかた","sentence":"创标者である先代社长が亡くなって以来、社内の结束力が徐々に弱まり、各部署間の连携も滞りがちで、このままだと会社全体の竞争力が失われるのではないかと危惧している。","translation":"自创始人的前社长去世以来，公司内部的凝聚力逐渐减弱，各部门间的协作也容易停滞，担心这样下去整个公司的竞争力会丧失。"},
+      {"id":"3-5","grammar":"～てからでないと・～てからでなければ","sentence":"全ての関係者から合意を得てからでないと、大规模な予算変更は実行に移せないし、その手続きには少なくとも一ヶ月はかかるため、スケジュールを再検討せざるを得ない。","translation":"如果不获得所有相关人员的同意，就无法实施大规模的预算变更，而且该手续至少需要一个月，因此不得不重新讨论日程。"},
+      {"id":"4-1","grammar":"～をはじめ(として)","sentence":"东京本社をはじめ、大阪や名古屋などの各支社でも同様の不具合が报告されており、どうやらシステム全体に共通したバグが存在する可能性が高いことが判明した。","translation":"以东京总部为首，大阪、名古屋等各分社也报告了同样的问题，发现很可能是整个系统存在共同的漏洞。"},
+      {"id":"4-2","grammar":"～からして","sentence":"このプロジェクトの計画书からして、既に多くの矛盾点が含まれているため、実行段階ではさらに大きな问题が発生することは明らかであり、早急に白纸から见直すべきだ。","translation":"单从这个项目的计划书来看，已经包含很多矛盾点，因此在执行阶段会发生更大问题是显而易见的，应该尽快推倒重来。"},
+      {"id":"4-3","grammar":"～にわたって","sentence":"先月の台风による被害は、関东全域にわたって広範囲に及び、特に沿岸部の工場では生産ラインが停止し、复旧には数周間にわたる作业が必要と见込まれている。","translation":"上个月的台风灾害波及关东全境，特别是沿岸工厂的生产线停止，预计恢复需要数周时间的作业。"},
+      {"id":"4-4","grammar":"～を通じて・～を通して","sentence":"この数年、様々な国际プロジェクトを通じて、私は異なる文化背景を持つチームメンバーと协働する能力を大きく向上させることができ、その経験は今後のキャリアにとって非常に貴重なものとなった。","translation":"这几年来，通过各种各样的国际项目，我大大提升了与不同文化背景的团队成员协作的能力，这些经验对我今后的职业生涯而言变得非常宝贵。"},
+      {"id":"4-5","grammar":"～限り","sentence":"当社が提供するサービスは、契约期间の限りにおいて无偿のサポートが受けられるが、それを過ぎると有偿となるため、更新时期を間違えないように注意が必要だ。","translation":"本公司提供的服务，只在合同期间内可以享受免费支持，超过后则收费，因此需要注意不要弄错更新时期。"},
+      {"id":"4-6","grammar":"～だけ","sentence":"必要な書類を揃えるだけで、手続き自体は非常に簡単だが、その書類を集めるのに時間がかかりすぎて、结果的に申请が遅れてしまった。","translation":"只需备齐必要文件，手续本身非常简单，但收集那些文件花费了太多时间，结果导致申请延迟了。"},
+      {"id":"5-1","grammar":"～に限り","sentence":"本日ご来店の先着50名様に限り、特别割引クーポンを進呈いたしますが、この机会をお见逃しなく、お早めにお越しください。","translation":"仅限今天到店的前50位顾客，将赠送特别折扣券，请勿错过这个机会，尽早光临。"},
+      {"id":"5-2","grammar":"～限り(は)","sentence":"私が知る限り、彼はこれまで一度も不正行为をしたことはなく、むしろ诚実な人物として評価されているので、今回の疑惑は何かの間違いだろうと信じている。","translation":"据我所知，他从未做过不正当行为，反而被评价为诚实的人，因此相信这次的疑惑肯定是某种误会。"},
+      {"id":"5-3","grammar":"～限りでは","sentence":"现時点でのデータ限りでは、市场の需要は依然として坚调だが、来月の新制品発売后に竞合が価格を下げれば、状况は一変する可能性も否定できない。","translation":"就目前的数据而言，市场需求依然坚挺，但下个月新产品发售后如果竞争对手降价，也不能排除情况发生巨变的可能性。"},
+      {"id":"5-4","grammar":"～に限って","sentence":"うちのチームに限って、なぜか毎回納期直前になってトラブルが発生し、今回もまたサーバーダウンが起きたため、残业が避けられない状況だ。","translation":"偏偏我们团队，每次总是到临近截止日期时出问题，这次又发生了服务器宕机，加班已不可避免。"},
+      {"id":"6-1","grammar":"～に限らず","sentence":"若手社员に限らず、ベテラン社员も新しいデジタルツールの习得が求められており、会社全体としてスキルアップのための研修を積極的に実施する方針に変わった。","translation":"不仅年轻员工，资深员工也被要求掌握新的数字工具，公司整体政策已转变为积极实施提升技能的培训。"},
+      {"id":"6-2","grammar":"～のみならず","sentence":"この新技术はコスト削減に効果的なのみならず、环境負荷の低减にも大きく貢献するため、多くの企业が导入を検討し始めている。","translation":"这项新技术不仅对降低成本有效，还对减少环境负荷有很大贡献，因此许多企业开始考虑引进。"},
+      {"id":"6-3","grammar":"～ばかりか","sentence":"彼は自分のミスを認めず、ばかりか他人に责任を転嫁しようとする态度が目立ち、チーム内の信頼を大きく损ねている。","translation":"他不仅不承认自己的错误，反而试图将责任转嫁给他人，这种态度很显眼，大大损害了团队内的信任。"},
+      {"id":"6-4","grammar":"～はもとより","sentence":"当社は国内市场はもとより、アジア、ヨーロッパ、アメリカなど海外市场にも積極的に进出しており、グローバルな视点での事业展开を推进している。","translation":"本公司不仅国内，还积极进军亚洲、欧洲、美国等海外市场，推进全球视角的事业展开。"},
+      {"id":"6-5","grammar":"～上(に)","sentence":"この商品は価格が手顷な上に、品質も非常に优れているため、発売以来连続して売上記録を更新し続けている。","translation":"这款商品不仅价格实惠，而且品质也非常优秀，因此自发售以来连续刷新销售记录。"},
+      {"id":"7-1","grammar":"～に関して","sentence":"先日の取引先とのトラブルに関して、既に弁护士を通じて正式な抗议文を送付しましたが、向こうからの返答がまだなく、今後の対応を协议する必要があります。","translation":"关于前几日与客户的纠纷，我们已经通过律师发送了正式的抗议书，但对方还没有回复，有必要讨论今后的应对。"},
+      {"id":"7-2","grammar":"～をめぐって","sentence":"新工場の建设地をめぐって、地元住民と自治体の間で激しい议论が交わされており、环境影响評価の结果次第では計画そのものが白纸になる恐れもある。","translation":"围绕新工厂的建设地，当地居民和自治体之间展开了激烈讨论，根据环境影响评估的结果，计划本身也有化为白纸的可能。"},
+      {"id":"7-3","grammar":"～にかけては","sentence":"営業力にかけては、彼の右に出る者はいないと言われているが、その反面、チームワークを軽视する倾向があり、それがたまに问题となる。","translation":"在销售能力方面，据说没有人能与他匹敌，但另一方面，他有轻视团队合作的倾向，这点偶尔会成问题。"},
+      {"id":"7-4","grammar":"～に対して","sentence":"顾客からの厳しいクレームに対して、诚意を持って対応し、再発防止策を明确に示すことが、企業の信頼回复には不可欠であると认识している。","translation":"对于顾客的严厉投诉，我认识到诚意应对并明确展示防止再发措施，对于企业恢复信赖是不可或缺的。"},
+      {"id":"7-5","grammar":"～にこたえて","sentence":"近年の多様化する顾客ニーズにこたえて、当社は従来の制品ラインを大幅に见直し、オーダーメイド型のサービスを新たに立ち上げることにした。","translation":"为了回应近年多样化的顾客需求，我们公司决定大幅调整传统产品线，新启动定制型服务。"},
+      {"id":"8-1","grammar":"～をもとに(して)","sentence":"昨年度のアンケート结果をもとに、新たなマーケティング戦略を立案し、ターゲット层を若年层に絞ったプロモーションを展開することにした。","translation":"基于去年度的问卷调查结果，制定了新的营销策略，决定开展将目标人群锁定为年轻人的促销活动。"},
+      {"id":"8-2","grammar":"～に基づいて","sentence":"専門家の意见に基づいて、災害時の避难経路を再设计し、训练計画も全面的に见直すことが、安全管理委员会で承认された。","translation":"基于专家意见，重新设计灾害时的避难路线，并全面修改训练计划，这在安全管理委员会上被批准了。"},
+      {"id":"8-3","grammar":"～に沿って","sentence":"新しいガイドラインに沿って、全社员に対してコンプライアンス研修を実施し、特に个人情報の取り扱いについて厳格なルールを周知彻底する。","translation":"按照新指南，对全体员工实施合规培训，特别是关于个人信息的处理，要彻底周知严格规则。"},
+      {"id":"8-4","grammar":"～のもとで・～のもとに","sentence":"有名なデザイナーの指导のもとで、若手スタッフが中心となって新ブランドのコンセプトを練り上げ、秋の発表会に向けて准备を進めている。","translation":"在著名设计师的指导下，以年轻员工为中心精心策划新品牌的概念，正在为秋季发布会推进准备。"},
+      {"id":"8-5","grammar":"～向けだ","sentence":"この教材は初心者向けに平易な表现で書かれているが、中级者にとっても复习に役立つ内容が含まれているため、幅広く利用されている。","translation":"这套教材是以初学者为对象用平易表达编写的，但其中也包含对中级者复习有益的内容，因此被广泛使用。"},
+      {"id":"9-1","grammar":"～につれて・～にしたがって","sentence":"プロジェクトが進むにつれて、当初想定していなかった问题が次々と浮上し、それに対処するための追加リソースが毎週のように要求されている。","translation":"随着项目推进，当初未预料到的问题不断涌现，为了应对这些，每周都被要求追加资源。"},
+      {"id":"9-2","grammar":"～に伴って・～とともに","sentence":"人口の高齢化に伴って、介護サービスの需要が急増しており、それとともに介護人材の确保が大きな社会的课题となっている。","translation":"随着人口老龄化，护理服务的需求急剧增加，同时确保护理人才成为重大的社会课题。"},
+      {"id":"9-3","grammar":"～次第だ","sentence":"この度の业績悪化は、主に為替変動と原材料高によるものであり、今後の回复は市场环境次第だと言わざるを得ない。","translation":"此次业绩恶化主要是由汇率变动和原材料上涨造成的，不得不说是今后的恢复取决于市场环境。"},
+      {"id":"9-4","grammar":"～に応じて","sentence":"顾客の要望に応じて、制品の仕様を柔软に変更できる体制を整えており、それにより満足度の向上を図っている。","translation":"我们建立了能根据客户要求灵活变更产品规格的体制，以此提高满意度。"},
+      {"id":"9-5","grammar":"～につけて","sentence":"故郷の风景を见るにつけて、子供時代の思い出が鲜明に蘇り、つい懐かしさに浸ってしまう。","translation":"每当看到故乡的风景，儿时的回忆就鲜明地复苏，不由得沉浸在怀念之中。"},
+      {"id":"10-1","grammar":"～やら～やら","sentence":"引っ越しの准备で、荷物の梱包やら住所変更の手続きやら、やるべきことが山積みで、休む暇もないほど忙しい毎日を送っている。","translation":"因为搬家准备，打包行李啦、更改住址手续啦，要做的事情堆积如山，每天都忙得没时间休息。"},
+      {"id":"10-2","grammar":"～というか～というか","sentence":"彼の提案は大胆というか无谋というか、リスクを考慮せずに突っ走る姿勢に、周囲は不安と期待が入り混じった複雑な気持ちを抱いている。","translation":"他的提议可以说是大胆还是鲁莽呢，那种不顾风险猛冲的姿态，让周围人抱着不安与期待交织的复杂心情。"},
+      {"id":"10-3","grammar":"～にしても～にしても・～にしろ～にしろ・～にせよ～にせよ","sentence":"賛成するにしても反対するにしても、少なくとも根拠を明确に示すべきであり、感情论だけで议论を進めるのは建设的ではない。","translation":"无论赞成还是反对，至少应该明确出示依据，仅凭感情论推进讨论是不具建设性的。"},
+      {"id":"10-4","grammar":"～といった","sentence":"昨今のビジネス环境では、AI、ビッグデータ、クラウドといった最先端技术を活用できない企业は、竞争力を维持することが難しくなっている。","translation":"在近来的商业环境中，无法活用AI、大数据、云端等尖端技术的企业，将难以维持竞争力。"},
+      {"id":"11-1","grammar":"～を问わず","sentence":"当社は経験の有無を问わず、やる気と学習意欲のある人材を積極的に採用しており、多様なバックグラウンドを持つ社员が活躍している。","translation":"本公司不问经验有无，积极录用有干劲 and 学习意愿的人才，拥有多样背景的员工正在活跃。"},
+      {"id":"11-2","grammar":"～にかかわりなく・～にかかわらず","sentence":"天候にかかわらず、毎朝6時にジョギングを欠かさず続けており、そのおかげで健康状態が非常に良い。","translation":"不论天气如何，我每天早上6点坚持慢跑，多亏如此，身体状况非常好。"},
+      {"id":"11-3","grammar":"～もかまわず","sentence":"彼は周りの批判もかまわず、自分の信念に従って新しい事业を立ち上げ、结果的に大成功を収めた。","translation":"他不在意周围的批判，根据自己的信念创立了新事业，结果取得了巨大成功。"},
+      {"id":"11-4","grammar":"～はともかく(として)","sentence":"この企画の费用対効果はともかく、実現可能性の面で多くの课题が残されており、まずは技术的な検証を優先すべきだ。","translation":"这个企划的性价比暂且不论，在可行性方面仍留有很多课题，首先应优先进行技术验证。"},
+      {"id":"11-5","grammar":"～はさておき","sentence":"細かい部分はさておき、まずは全体の构成を固めてから、各担当者に詳細を割り振ることにしよう。","translation":"细节暂且搁置，先确定整体结构，然后再把详细内容分配给各负责人吧。"},
+      {"id":"12-1","grammar":"～わけがない","sentence":"あの诚実な彼が、顾客を欺くような行为をするわけがない。何か误解があるに違いないと、私は強く信じている。","translation":"那个诚实的他，不可能做出欺骗顾客的行为。我相信肯定有什么误解。"},
+      {"id":"12-2","grammar":"～どころではない・～どころか","sentence":"今月は売上が大幅に落ち込み、ボーナスどころか給料の一部すらカットされる可能性があると人事部から通告された。","translation":"本月销售额大幅下降，从人事部得到通知，别说奖金了，连工资的一部分都可能被削减。"},
+      {"id":"12-3","grammar":"～ものか","sentence":"あんなに无责任な上司のために、残业してまで働くものか。私はさっさと転職することを決意した。","translation":"为了那样不负责任的上司，我怎么可能加班工作呢。我已经决心尽快跳槽。"},
+      {"id":"12-4","grammar":"～わけではない・～というわけではない","sentence":"全ての社员が新しい制度に反対しているわけではないが、多くの人がその运用方法に不安を感じているというのは確かだ。","translation":"并非所有员工都反对新制度，但确实有很多人对其运用方法感到不安。"},
+      {"id":"12-5","grammar":"～というものではない・～というものでもない","sentence":"給料が高ければ仕事がやりがいがあるというものではない。むしろ、人间関係や成長机会の方が重要だと最近つくづく感じる。","translation":"并非工资高工作就有价值。最近我深切感受到，人际关系和成长机会反而更重要。"},
+      {"id":"13-1","grammar":"～とは","sentence":"「プロフェッショナル」とは、単に技术が高いだけではなく、倫理観や责任感を持って行动する人のことを指すと、私は考えている。","translation":"我认为“专业人士”不仅仅指技术高超，还指持有伦理观和责任感行动的人。"},
+      {"id":"13-2","grammar":"～といえば","sentence":"京都といえば、古い寺院や伝統工芸が有名だが、近年はスタートアップ企業の诱致にも力を入れており、新しい顔も见せ始めている。","translation":"说起京都，古老的寺院和传统工艺品很有名，但近年也在大力吸引初创企业，开始展现新的一面。"},
+      {"id":"13-3","grammar":"～というと・～といえば・～といったら","sentence":"この地域の特産品というと、まず思い浮かぶのは新鲜な海産物だが、実は果物の生産も盛んで、特にブドウの品質が高い。","translation":"说到这个地区的特产，首先想到的是新鲜海产，但实际上水果生产也很兴盛，特别是葡萄品质高。"},
+      {"id":"13-4","grammar":"～(のこと)となると","sentence":"普段は穏やかな彼も、仕事の品質となると、非常に厳しく、少しのミスも見逃さないことで知られている。","translation":"平时温和的他，一旦涉及工作质量，就非常严格，以不放过任何小错误而闻名。"},
+      {"id":"13-5","grammar":"～といったら","sentence":"彼の料理の腕前といったら、まるでプロのシェフのようで、いつも惊かされる。","translation":"说到他的厨艺，简直就像专业厨师一样，总是让我吃惊。"},
+      {"id":"14-1","grammar":"～にもかかわらず","sentence":"彼は十分な准备をしていたにもかかわらず、紧张のあまり本番で実力を発揮できず、悔しい思いをした。","translation":"尽管他做了充分准备，却因为过于紧张而在正式场合未能发挥实力，感到非常懊悔。"},
+      {"id":"14-2","grammar":"～ものの・～とはいうものの","sentence":"新しいスマホを購入したものの、操作方法が複雑で使いこなせず、结局昔の機種をそのまま使っている。","translation":"虽然买了新智能手机，但操作方法复杂用不惯，结果还是继续用旧机型。"},
+      {"id":"14-3","grammar":"～ながら(も)","sentence":"彼女は若いながらも、非常に冷静で的確な判断力を持っており、トラブル时にも頼りになる存在だ。","translation":"她虽然年轻，却拥有非常冷静而准确的判断力，在遇到麻烦时也是值得依赖的人。"},
+      {"id":"14-4","grammar":"～つつ(も)","sentence":"彼は不満を感じつつも、会社の方針に従って仕事を続けているが、このままではやがて限界が来るかもしれない。","translation":"他虽然感到不满，但还是按照公司方针继续工作，但这样下去或许迟早会到极限。"},
+      {"id":"14-5","grammar":"～といっても","sentence":"彼はエリート社员といっても、実際には経験が浅く、まだ多くのことを学ぶ段階だ。","translation":"虽说是精英员工，但实际上经验尚浅，还处在学习很多事情的阶段。"},
+      {"id":"14-6","grammar":"～からといって","sentence":"一度失败したからといって、全てを諦める必要はない。その失败から学ぶことが大切だ。","translation":"不能因为失败过一次就放弃一切。从失败中学习才是重要的。"},
+      {"id":"15-1","grammar":"～としたら・～とすれば・～とすると・～となったら・～となれば・～となると","sentence":"このまま円安が続くとすれば、输入コストがさらに膨らみ、制品価格の引き上げは避けられないだろう。","translation":"如果日元继续贬值，进口成本将进一步增加，产品提价将不可避免吧。"},
+      {"id":"15-2","grammar":"～ものなら","sentence":"もし彼がそのプロジェクトを成功させるものなら、私は彼を全面的に支援する用意がある。","translation":"如果他真能成功完成那个项目，我准备全面支持他。"},
+      {"id":"15-3","grammar":"～(よ)うものなら","sentence":"上司の機嫌を损ねようものなら、その後数日間は厳しい叱責が続くことは間違いないので、彼の态度には细心の注意を払っている。","translation":"如果惹恼了上司，之后几天肯定会被严厉斥责，所以我对他态度十分小心。"},
+      {"id":"15-4","grammar":"～ないことには","sentence":"実際に現地を访れないことには、その国の文化や习惯を真に理解することは難しいだろう。","translation":"不亲自去当地访问，恐怕很难真正理解那个国家的文化和习惯。"},
+      {"id":"15-5","grammar":"～を抜きにしては","sentence":"チームワークを抜きにしては、この大规模なプロジェクトを期限内に完了することは不可能に近い。","translation":"没有团队合作，要在期限内完成这个大规模项目几乎是不可能的。"},
+      {"id":"15-6","grammar":"～としても・～にしても・～にしろ・～にせよ","sentence":"仮に彼が参加したとしても、彼一人で全てを解決できるわけではないので、他のメンバーの協力が不可欠だ。","translation":"即使他参加了，也并非他一人就能解决所有问题，因此其他成员的协助是不可缺或缺的。"},
+      {"id":"16-1","grammar":"～によって","sentence":"この法律の改正によって、中小企業の負担が大幅に軽減されることが期待されているが、同時に新たな规制も导入されるため、注意が必要だ。","translation":"通过这项法律的修改，预计中小企业的负担将大幅减轻，但同时也会引入新规，因此需要注意。"},
+      {"id":"16-2","grammar":"～ものだから・～もので・～もの","sentence":"あまりに眠かったものだから、つい大事な会议中に居眠りをしてしまい、部长から厳しく注意された。","translation":"因为太困了，忍不住在重要会议上打了个盹，被部长严厉提醒了。"},
+      {"id":"16-3","grammar":"～おかげだ／～せいだ","sentence":"今回のプロジェクトが成功したのは、チーム全員の努力のおかげだ。一方で、前回の失败は私の判断ミスのせいだと反省している。","translation":"这次项目成功多亏了团队全体成员的努力。另一方面，上次的失败我反省是因为我的判断失误。"},
+      {"id":"16-4","grammar":"～あまり・あまりの～に","sentence":"彼は仕事に熱心なあまり、健康を损ねてしまい、医者からしばらく休养するよう言われた。","translation":"他因过于热心工作，损害了健康，被医生要求暂时休养。"},
+      {"id":"16-5","grammar":"～につき","sentence":"本日は临时休業につき、ご不便をおかけしますが、何卒ご了承くださいませ。","translation":"今天因临时歇业，给您带来不便，敬请谅解。"},
+      {"id":"17-1","grammar":"～ことだし","sentence":"皆さんもご存知のことだし、この件についてはこれ以上议論する必要はないでしょう。","translation":"大家也都知道这件事，关于这个问题没有必要再讨论了吧。"},
+      {"id":"17-2","grammar":"～のことだから","sentence":"彼のことだから、约束した時間には必ず来ると思っていたが、今日は珍しく遅れた。","translation":"因为是他的事，我本以为他一定会准时来，但今天却罕见地迟到了。"},
+      {"id":"17-3","grammar":"～だけに","sentence":"彼は長年この業界で働いてきただけに、市场の动向について非常に詳しく、彼の意见はいつも参考になる。","translation":"正因为他长年在这个行业工作，所以对市场动向非常了解，他的意见总是很有参考价值。"},
+      {"id":"17-4","grammar":"～ばかりに","sentence":"彼女は真実を話さなかったばかりに、かえって误解を招いてしまい、後悔している。","translation":"她正因为没有说出真相，反而招致了误解，正在后悔。"},
+      {"id":"17-5","grammar":"～からには・～以上(は)・～上は","sentence":"この仕事を引き受けたからには、最後まで责任を持ってやり遂げる覚悟だ。","translation":"既然接下了这份工作，我已有决心负责任地坚持到最后。"},
+      {"id":"18-1","grammar":"～がたい","sentence":"彼の突然の退職は信じがたいが、既に正式な辞表が提出されているため、受け入れざるを得ない。","translation":"他突然辞职令人难以置信，但既然已经提交了正式辞呈，不得不接受。"},
+      {"id":"18-2","grammar":"～わけにはいかない・～わけにもいかない","sentence":"重要な顾客の前で失態を演じるわけにはいかないので、十分な准备をして临むつもりだ。","translation":"不能在重要客户面前出丑，所以我打算做好充分准备去应对。"},
+      {"id":"18-3","grammar":"～かねる","sentence":"ご依頼の内容は当社の対応範囲を超えており、お引き受けしかねますので、別の専門業者をご紹介いたします。","translation":"您委托的内容超出了本公司的应对范围，我们难以承接，所以将为您介绍其他专业公司。"},
+      {"id":"18-4","grammar":"～ようがない","sentence":"相手の連絡先が分からない以上、确认のしようがなく、ただ待つしかない状況だ。","translation":"既然不知道对方的联系方式，就无法确认，只能干等。"},
+      {"id":"18-5","grammar":"～どころではない（重复但单独）","sentence":"今はそんなことを話しているどころではない。納期が迫っていて、とにかく作业を進めなければならない。","translation":"现在不是说那种话的时候。截止日期迫近，总之必须推进工作。"},
+      {"id":"18-6","grammar":"～得る／～得ない","sentence":"この計画にはリスクが伴うが、成功し得る可能性も十分にあるため、挑戦する価値はあると思う。","translation":"这个计划伴随风险，但成功的可能性也足够大，我认为值得挑战。"},
+      {"id":"19-1","grammar":"～わりに(は)","sentence":"彼は年齢のわりには非常に落ち着いており、難しい局面でも冷静に対処できる。","translation":"他年纪虽轻却非常沉稳，即使在困难局面也能冷静应对。"},
+      {"id":"19-2","grammar":"～にしては","sentence":"このレストランは値段にしては料理の質が高く、コストパフォーマンスが良いと評判だ。","translation":"这家餐厅就价格而言菜品质量很高，性价比好而受到好评。"},
+      {"id":"19-3","grammar":"～だけ(のことは)ある","sentence":"彼が長年鍛え上げてきただけのことはあり、そのプレゼンテーションは非常に説得力があった。","translation":"他不愧长年磨练，那个发表非常有说服力。"},
+      {"id":"19-4","grammar":"～として","sentence":"社长として、会社の将来を见据えた戦略を立てる责任がある。","translation":"作为社长，有责任制定展望公司未来的战略。"},
+      {"id":"19-5","grammar":"～にとって","sentence":"今回の経験は私にとって非常に貴重であり、今後のキャリア形成に大いに役立つだろう。","translation":"这次经验对我非常宝贵，将对今后的职业形成大有帮助吧。"},
+      {"id":"19-6","grammar":"～にしたら・～にすれば・～にしてみれば・～にしても","sentence":"社员にしたら、給料よりも働きがいやキャリアアップの方が重要だと感じている人が増えている。","translation":"对员工来说，感觉比起工资，工作价值和职业发展更重要的人正在增加。"},
+      {"id":"20-1","grammar":"～たところ","sentence":"新しいソフトウェアを試してみたところ、思った以上に使いやすく、作业効率が大幅に向上した。","translation":"试着用了新软件，结果比想象中更好用，工作效率大幅提高了。"},
+      {"id":"20-2","grammar":"～きり","sentence":"彼は「行ってきます」と言ったきり、もう三時間も戻ってこないので、何かあったのではないかと心配だ。","translation":"他说了“我出门了”之后，已经三个小时没回来，担心是不是出了什么事。"},
+      {"id":"20-3","grammar":"～あげく","sentence":"さんざん迷ったあげく、結局最初の案を採用することに決めた。","translation":"犹豫了半天，结果还是决定采用最初的方案。"},
+      {"id":"20-4","grammar":"～末(に)","sentence":"長い协议の末、ようやく両社の合意に至り、契约书に調印した。","translation":"经过长时间协商，终于达成两公司协议，签署了合同。"},
+      {"id":"20-5","grammar":"～ところだった","sentence":"もう少しで電車に乗り遅れるところだったが、なんとか駆け込んで間に合った。","translation":"差点就赶不上电车了，但总算跑进去了。"},
+      {"id":"20-6","grammar":"～ずじまいだ","sentence":"今回の旅行では、温泉に入る時間がなくて、結局入らずじまいだった。","translation":"这次旅行没有时间泡温泉，最终没泡成。"},
+      {"id":"21-1","grammar":"～ぐらい・～くらい","sentence":"彼は毎日三時間くらい勉強しているが、それでも試験に合格できるかどうか不安だ。","translation":"他每天学习大约三小时，但即便如此还是担心能否通过考试。"},
+      {"id":"21-2","grammar":"～など・～なんか・～なんて","sentence":"映画なんて、私はあまり见ない。時間があれば本を読む方が好きだ。","translation":"电影什么的我不太看。有时间的话我更喜欢读书。"},
+      {"id":"21-3","grammar":"～まで・～までして・～てまで","sentence":"彼は自分の健康を犠牲にしてまで、仕事を優先させる必要はないと思う。","translation":"我认为他没有必要牺牲自己的健康来优先工作。"},
+      {"id":"21-4","grammar":"～として～ない","sentence":"彼は医者として、患者の命を軽んじることは絶対にない。","translation":"作为医生，他绝对不会轻视患者的生命。"},
+      {"id":"21-5","grammar":"～さえ","sentence":"彼は挨拶さえできないのか、と周囲から呆れられてしまった。","translation":"他连打招呼都不会吗，周围人都无语了。"},
+      {"id":"21-6","grammar":"～てでも","sentence":"彼は借金をしてでも、自分の会社を立ち上げたいという強い意志を持っている。","translation":"他有着即使借钱也要创立自己公司的强烈意志。"},
+      {"id":"22-1","grammar":"～とみえる","sentence":"彼は毎日遅くまで残業しているとみえ、最近とても疲れている様子だ。","translation":"看来他每天加班到很晚，最近看起来很疲惫。"},
+      {"id(--22-2","grammar":"～かねない","sentence":"このまま無理を続けると、健康を壊しかねないので、適度に休息を取るべきだ。","translation":"这样继续勉强下去，可能会搞坏身体，所以应该适当休息。"},
+      {"id":"22-3","grammar":"～おそれがある","sentence":"台風の接近により、明日の新幹線は運休するおそれがあるため、早めに情報を确认することをお勧めします。","translation":"因台风接近，明天的新干线有可能停运，建议提前确认信息。"},
+      {"id":"22-4","grammar":"～まい／～ではあるまいか","sentence":"彼はそんなことを言うはずはあるまい。何か误解があるに違いない。","translation":"他不可能说那种话吧。肯定有什么误解。"},
+      {"id":"22-5","grammar":"～に違いない・～に相違ない","sentence":"あの二人は仲が良いに違いない。いつも一緒に行动している。","translation":"那两个人关系肯定很好。总是一起行动。"},
+      {"id":"22-6","grammar":"～にきまっている","sentence":"こんなに頑張ったのだから、試験に合格するにきまっている。","translation":"这么努力了，考试肯定能通过。"},
+      {"id":"23-1","grammar":"～ものだ","sentence":"子供の頃は、よくあの公园で遊んだものだ。今はもう住宅地になってしまったが。","translation":"小时候，我经常在那个公园玩。现在已经成为住宅区了。"},
+      {"id":"23-2","grammar":"～というものだ","sentence":"約束の時間に遅れておいて、謝罪もせずに平然としているのは、无責任というものだ。","translation":"约会迟到了却不道歉还若无其事，那才叫不负责任。"},
+      {"id":"23-3","grammar":"～にすぎない","sentence":"今回の成功は、たまたま運が良かったにすぎない。油断せずに努力を続けるつもりだ。","translation":"这次成功不过是运气好罢了。我打算不松懈继续努力。"},
+      {"id":"23-4","grammar":"～にほかならない","sentence":"彼が会社を辞めたのは、自分の夢を追うためであり、それ以外の理由にほかならない。","translation":"他辞职无非是为了追求自己的梦想，没有其他原因。"},
+      {"id":"23-5","grammar":"～に越したことはない","sentence":"健康管理には、十分な睡眠とバランスの取れた食事が何よりも大切であり、それに越したことはない。","translation":"健康管理方面，充足的睡眠和均衡的饮食比什么都重要，这是最好的。"},
+      {"id":"23-6","grammar":"～しかない・～よりほかない","sentence":"予算が足りない以上、計画を縮小するしかない。","translation":"既然预算不够，只能缩小计划。"},
+      {"id":"23-7","grammar":"～べきだ／～べきではない","sentence":"部下のミスに対して、上司は感情的になるべきではない。冷静に原因を分析すべきだ。","translation":"对于下属的失误，上司不应该感情用事。应该冷静分析原因。"},
+      {"id":"24-1","grammar":"～（よ）うではないか","sentence":"この問題を解決するために、みんなで知恵を出し合おうではないか。","translation":"为了解决这个问题，让我们一起出谋划策吧。"},
+      {"id":"24-2","grammar":"～ことだ","sentence":"健康に気をつけることだ。夜更かしは体に良くない。","translation":"要注意健康。熬夜对身体不好。"},
+      {"id":"24-3","grammar":"～ものだ／～ものではない","sentence":"年長者に対しては、敬意を払うものだ。无礼な态度を取るものではない。","translation":"对年长者应该表示敬意。不应采取无礼态度。"},
+      {"id":"24-4","grammar":"～ことはない","sentence":"そんなに心配することはない。きっとうまくいく。","translation":"不必那么担心。一定会顺利的。"},
+      {"id":"24-5","grammar":"～まい／～（よ）うか～まいか","sentence":"彼が来るか来まいか、私は准备を進めておくつもりだ。","translation":"不管他来不来，我都打算继续准备。"},
+      {"id":"24-6","grammar":"～ものか","sentence":"あんなにひどい仕打ちを受けて、よくも平気でいられるものか。","translation":"受到那样的对待，怎么可能还若无其事呢。"},
+      {"id":"25-1","grammar":"～てしかたがない・～てしようがない・～てたまらない","sentence":"彼の才能には惊かされてしかたがない。いつも新しいアイデアを出してくる。","translation":"对他的才能惊讶得没办法。总是能提出新想法。"},
+      {"id":"25-2","grammar":"～てならない","sentence":"彼の无責任な言动には腹が立ってならない。しかし、表には出さないようにしている。","translation":"对他不负责任的言行生气得不行。但我尽量不表现出来。"},
+      {"id":"25-3","grammar":"～ないではいられない・～ずにはいられない","sentence":"その美しい景色を见ると、写真を撮らずにはいられない。","translation":"看到那美丽的景色，忍不住要拍照。"},
+      {"id":"25-4","grammar":"～ないわけに（は）いかない","sentence":"上司に頼まれた仕事だから、断るわけにはいかない。","translation":"因为是上司拜托的工作，不能拒绝。"},
+      {"id":"25-5","grammar":"～ざるを得ない","sentence":"証拠がはっきりしている以上、彼のミスを認めざるを得ない。","translation":"既然证据确凿，不得不承认是他的失误。"},
+      {"id":"26-1","grammar":"～たいものだ・～てほしいものだ","sentence":"子供たちが平和な世界で育ってほしいものだと、心から愿っている。","translation":"我衷心希望孩子们能在和平的世界成长。"},
+      {"id":"26-2","grammar":"～ものだ（再次但用法不同）","sentence":"人间は誰でも、死ぬものだ。それを受け入れることが大切だ。","translation":"人都是会死的。接受这一点很重要。"},
+      {"id":"26-3","grammar":"～ないもの（だろう）か","sentence":"この問題を解決する良い方法はないものだろうかと、头を悩ませている。","translation":"有没有什么好办法能解决这个问题呢，我正在苦思。"},
+      {"id":"26-4","grammar":"～ものがある","sentence":"彼のその真剣なまなざしには、见る者を惹きつけるものがある。","translation":"他那认真的眼神，有吸引观者的东西。"},
+      {"id":"26-5","grammar":"～ことだ（再次但不同）","sentence":"毎日少しずつでも続けることが、上达の秘诀だ。","translation":"每天哪怕一点点坚持，是进步的秘诀。"},
+      {"id":"26-6","grammar":"～ことだろう・～ことか","sentence":"彼は今ごろ、どれほど悔しがっていることだろう。","translation":"他现在肯定多么懊悔吧。"},
+      {"id":"app-1","grammar":"～において","sentence":"本会议において、今後の経営方針について活発な议論が交わされた。","translation":"在本会议上，关于今后的经营方针进行了热烈的讨论。"},
+      {"id":"app-2","grammar":"～に先立って","sentence":"新制品の発表に先立って、市场调查を彻底的に行い、竞合分析も済ませておく必要がある。","translation":"在新产品发布之前，有必要彻底进行市场调查，并完成竞争分析。"},
+      {"id":"app-3","grammar":"～とはいえ","sentence":"彼はまだ新人とはいえ、その実力はベテランに劣らない。","translation":"虽然他仍是新人，但实力不亚于老手。"},
+      {"id":"app-4","grammar":"～からすると・～からすれば・～からしたら","sentence":"私の立场からすると、今回の提案はあまり現実的ではないように思える。","translation":"从我的立场来看，这次的提案似乎不太现实。"},
+      {"id":"app-5","grammar":"～（た）てまえ","sentence":"一度引き受けたてまえ、途中で投げ出すわけにはいかない。","translation":"既然已经接受了，就不能中途放弃。"}
+    ];
+
+    let currentTask = null;
+    let currentStage = 1;
+    let clickedPredicates = new Set();
+    let clickedStems = new Set();
+    let placedBlocks = [];
+    let runtimeEngineData = null;
+
+    // 侧边栏菜单目录生成
+    function buildSidebarMenu() {
+        const menuContainer = document.getElementById('menu-container');
+        itemBank.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'menu-item';
+            div.id = `menu-${item.id}`;
+            div.innerText = `${item.id} [${item.grammar}]`;
+            div.onclick = () => loadTaskById(item.id);
+            menuContainer.appendChild(div);
+        });
+    }
+
+    // 智能语感动力学断句系统 (全自动分词自适配)
+    function autoCompileEngine(task) {
+        const s = task.sentence;
+        let tokens = [];
+        
+        // 智能捕捉多组标点符号和意群断裂点
+        const rawChunks = s.split(/(?=[、。，：？])|(?<=[、。，：？])/g).filter(x => x.length > 0);
+        let idCounter = 1;
+
+        rawChunks.forEach(chunk => {
+            if (chunk.length <= 4 || /[、。，：？]/.test(chunk)) {
+                tokens.push({ id: idCounter++, text: chunk });
+            } else {
+                // 中度意群二次切割
+                let mid = Math.ceil(chunk.length / 2);
+                tokens.push({ id: idCounter++, text: chunk.substring(0, mid) });
+                tokens.push({ id: idCounter++, text: chunk.substring(mid) });
+            }
+        });
+
+        // 智能捕捉最后一个原子作为主谓目标
+        const lastTokenId = tokens[tokens.length - 1].text === '。' ? tokens.length - 1 : tokens.length;
+        const predicateId = lastTokenId;
+        
+        // 分割修饰群
+        let modifiers = [];
+        let modCount = 3;
+        let tokensPerMod = Math.floor((tokens.length - 2) / modCount);
+        
+        for (let i = 0; i < modCount; i++) {
+            let start = i * tokensPerMod;
+            let end = (i === modCount - 1) ? tokens.length - 2 : (i + 1) * tokensPerMod;
+            let tIds = [];
+            let tText = "";
+            for (let j = start; j < end; j++) {
+                if(tokens[j] && tokens[j].id !== predicateId) {
+                    tIds.push(tokens[j].id);
+                    tText += tokens[j].text;
+                }
+            }
+            // 简单截取对应翻译段落作为互动积木
+            let cnChunk = task.translation.substring(i * 8, (i + 1) * 8 + 4) || "修饰片段";
+            modifiers.push({
+                id: `mod${i+1}`,
+                tokenIds: tIds,
+                text: tText,
+                cn: cnChunk
+            });
+        }
+
+        // 锁定一个中间主语词
+        let stemId = Math.floor(tokens.length / 2);
+        if(stemId === predicateId) stemId--;
+
+        return {
+            tokens: tokens,
+            predicates: [predicateId],
+            stems: [stemId],
+            modifiers: modifiers
+        };
+    }
+
+    function loadTaskById(id) {
+        const target = itemBank.find(x => x.id === id);
+        if(!target) return;
+        
+        // 高亮侧边栏
+        document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+        const menuEl = document.getElementById(`menu-${id}`);
+        if(menuEl) menuEl.classList.add('active');
+
+        currentTask = target;
+        document.getElementById('current-grammar-label').innerText = `${target.id} 核心语法：${target.grammar}`;
+        
+        // 动态转译运行时交互树
+        runtimeEngineData = autoCompileEngine(target);
+        resetStageTo(1);
+    }
+
+    function loadRandomTask() {
+        const randItem = itemBank[Math.floor(Math.random() * itemBank.length)];
+        loadTaskById(randItem.id);
+    }
+
+    function resetStageTo(stage) {
+        currentStage = stage;
+        clickedPredicates.clear();
+        clickedStems.clear();
+        placedBlocks = [];
+
+        document.getElementById('next-stage-btn').style.display = 'none';
+        document.getElementById('blocks-area').style.display = 'none';
+        document.getElementById('sentence-container').className = 'sentence-area';
+
+        // 控制进度条
+        for(let i=1; i<=4; i++) {
+            const ind = document.getElementById(`indicator-${i}`);
+            ind.className = 'step-indicator';
+            if(i === 1) ind.classList.add('active');
+        }
+
+        // 渲染文本区域（防剧透，全黑色）
+        const container = document.getElementById('sentence-container');
+        container.innerHTML = '';
+        runtimeEngineData.tokens.forEach(t => {
+            const span = document.createElement('span');
+            span.className = 'word-token';
+            span.innerText = t.text;
+            span.onclick = () => handleTokenClick(t.id, span);
+            container.appendChild(span);
+        });
+
+        document.getElementById('instruction').innerHTML = "🚩 【步骤一】请在上方日文句子中，找出并点击处于句尾或分句末尾的“核心谓语”。";
+        document.getElementById('translation-container').innerHTML = '<span class="translation-placeholder">等待结构分析...</span>';
+    }
+
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.style.backgroundColor = type === 'success' ? 'var(--success)' : 'var(--error)';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+
+    function handleTokenClick(id, element) {
+        if (currentStage === 1) {
+            if (runtimeEngineData.predicates.includes(id)) {
+                if (!clickedPredicates.has(id)) {
+                    clickedPredicates.add(id);
+                    element.classList.add('predicate-marked');
+                    showToast("成功锁定句尾核心谓语！");
+                    if (clickedPredicates.size === runtimeEngineData.predicates.length) {
+                        document.getElementById('translation-container').innerHTML = `……［核心主干动作已确立］`;
+                        document.getElementById('next-stage-btn').style.display = 'block';
+                    }
+                }
+            } else { showToast("这不是句尾主导动作的谓语，再试一次！", 'error'); }
+        } else if (currentStage === 2) {
+            if (runtimeEngineData.stems.includes(id)) {
+                if (!clickedStems.has(id)) {
+                    clickedStems.add(id);
+                    element.classList.add('main-stem');
+                    showToast("主干核心词定位成功！");
+                    if (clickedStems.size === runtimeEngineData.stems.length) {
+                        document.getElementById('translation-container').innerHTML = `【核心主语主体】＋ 核心动作谓语`;
+                        document.getElementById('next-stage-btn').style.display = 'block';
+                    }
+                }
+            } else { showToast("这不是句子的主语或核心客体，再试一次！", 'error'); }
+        }
+    }
+
+    function advanceStage() {
+        currentStage++;
+        document.getElementById('next-stage-btn').style.display = 'none';
+        
+        for(let i=1; i<=4; i++) {
+            const ind = document.getElementById(`indicator-${i}`);
+            ind.className = 'step-indicator';
+            if(i < currentStage) ind.classList.add('completed');
+            if(i === currentStage) ind.classList.add('active');
+        }
+
+        if (currentStage === 2) {
+            document.getElementById('instruction').innerHTML = "🔍 【步骤二】句子进入“迷雾模式”，请逆向寻找并点击能够回答“谁/什么”的【主语】或核心词。";
+            document.getElementById('sentence-container').classList.add('mist-mode');
+        } 
+        else if (currentStage === 3) {
+            document.getElementById('instruction').innerHTML = "📦 【步骤三：修饰大变身】系统已自动为复杂的修饰从句套上发光【中括号】。请点击 <b>[-]</b> 按钮折叠它们，体验视觉减负。";
+            buildStage3ModifierWrappers();
+        } 
+        else if (currentStage === 4) {
+            document.getElementById('instruction').innerHTML = "🧩 【步骤四：逆向重组翻译】请点击下方洗牌后的中文修饰积木卡片，按照汉语习惯填入正确的语法空槽中。";
+            buildStage4TranslationBlocks();
+        }
+    }
+
+    function buildStage3ModifierWrappers() {
+        const container = document.getElementById('sentence-container');
+        container.innerHTML = '';
+        container.classList.remove('mist-mode');
+
+        let modifierMap = {};
+        runtimeEngineData.modifiers.forEach(mod => {
+            mod.tokenIds.forEach(id => { modifierMap[id] = mod; });
+        });
+
+        let currentWrapper = null;
+        let currentModId = null;
+
+        runtimeEngineData.tokens.forEach(token => {
+            const matchedMod = modifierMap[token.id];
+            if (matchedMod) {
+                if (currentModId !== matchedMod.id) {
+                    currentModId = matchedMod.id;
+                    currentWrapper = document.createElement('div');
+                    currentWrapper.className = 'modifier-wrapper';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'collapse-btn';
+                    btn.innerText = '-';
+                    
+                    const placeholder = document.createElement('span');
+                    placeholder.className = 'collapsed-text';
+                    placeholder.innerText = '修饰成分/N2语法点';
+
+                    const targetWrapper = currentWrapper;
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        targetWrapper.classList.toggle('collapsed');
+                        btn.innerText = targetWrapper.classList.contains('collapsed') ? '+' : '-';
+                        
+                        const totalWrappers = document.querySelectorAll('.modifier-wrapper').length;
+                        const collapsedWrappers = document.querySelectorAll('.modifier-wrapper.collapsed').length;
+                        if (collapsedWrappers === totalWrappers) {
+                            document.getElementById('next-stage-btn').style.display = 'block';
+                            showToast("修饰全折叠！阅读压力直降为零！");
+                        }
+                    };
+
+                    currentWrapper.appendChild(btn);
+                    currentWrapper.appendChild(placeholder);
+                    container.appendChild(currentWrapper);
+                }
+                const span = document.createElement('span');
+                span.className = 'word-token';
+                span.innerText = token.text;
+                currentWrapper.appendChild(span);
+            } else {
+                currentModId = null;
+                currentWrapper = null;
+                const span = document.createElement('span');
+                span.className = 'word-token';
+                if (runtimeEngineData.predicates.includes(token.id)) span.classList.add('predicate-marked');
+                if (runtimeEngineData.stems.includes(token.id)) span.classList.add('main-stem');
+                span.innerText = token.text;
+                container.appendChild(span);
+            }
+        });
+    }
+
+    function buildStage4TranslationBlocks() {
+        const transContainer = document.getElementById('translation-container');
+        const blocksArea = document.getElementById('blocks-area');
+        blocksArea.style.display = 'flex';
+
+        let slotsHtml = "";
+        runtimeEngineData.modifiers.forEach(mod => {
+            slotsHtml += `<span class="trans-slot" id="slot-${mod.id}">（空缺片段）</span>`;
+        });
+        transContainer.innerHTML = `<div class="slots-container">${slotsHtml}。</div>`;
+
+        const shuffledModifiers = [...runtimeEngineData.modifiers].sort(() => Math.random() - 0.5);
+        blocksArea.innerHTML = '';
+        
+        shuffledModifiers.forEach(mod => {
+            const block = document.createElement('div');
+            block.className = 'translation-block';
+            block.innerText = mod.cn;
+            block.onclick = () => {
+                if (block.classList.contains('used')) return;
+                const slot = document.getElementById(`slot-${mod.id}`);
+                if (slot) {
+                    slot.innerText = mod.cn;
+                    slot.style.borderBottom = 'none';
+                    block.classList.add('used');
+                    placedBlocks.push(mod.id);
+                    
+                    if (placedBlocks.length === runtimeEngineData.modifiers.length) {
+                        setTimeout(() => {
+                            transContainer.innerHTML = `
+                                <div style="font-size: 17px; border-left: 4px solid var(--success); padding-left: 15px; line-height:1.8;">
+                                    ${currentTask.translation.replace(currentTask.grammar, `<span class="grammar-highlight">${currentTask.grammar}</span>`)}
+                                </div>
+                            `;
+                            blocksArea.style.display = 'none';
+                            document.getElementById('instruction').innerHTML = `🎉 <b>全句破译完成！</b> 核心N2语法：<span class="grammar-highlight">${currentTask.grammar}</span> 运用成功！`;
+                            showToast("通关！这句长难句已经被你彻底拿捏！");
+                        }, 500);
+                    }
+                }
+            };
+            blocksArea.appendChild(block);
+        });
+    }
+
+    window.onload = () => {
+        buildSidebarMenu();
+        loadTaskById("1-1"); // 默认载入第一题
+    };
+</script>
+
+</body>
+</html>
