@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>学前儿童游戏 · 终极精析（含教案大纲）</title>
+    <style>
+        /* ===== 全局重置 & 莫兰迪色 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f0eb;
+            --card-bg: #ffffff;
+            --primary: #b8a9c9;
+            --primary-light: #d5cce6;
+            --primary-dark: #9a87b0;
+            --secondary: #c4b5a0;
+            --accent: #c9a9a6;
+            --accent-light: #e3cecb;
+            --blue: #a8b5c0;
+            --blue-light: #d0d9e0;
+            --green: #b5c4b1;
+            --green-light: #d7e2d4;
+            --yellow: #e3d5b8;
+            --text: #4a4a4a;
+            --text-light: #7a7a7a;
+            --shadow: rgba(160, 140, 130, 0.15);
+            --radius: 18px;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 18px 28px;
+            box-shadow: 0 4px 20px var(--shadow);
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header h1 small {
+            font-size: 14px;
+            font-weight: 400;
+            -webkit-text-fill-color: var(--text-light);
+            background: none;
+        }
+
+        .stats {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: var(--text-light);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .stats span {
+            background: var(--bg);
+            padding: 6px 16px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stats .num {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 18px;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 18px 12px 44px;
+            border: none;
+            border-radius: 40px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 12px var(--shadow);
+            font-size: 15px;
+            transition: var(--transition);
+            outline: none;
+            color: var(--text);
+        }
+        .search-box input:focus {
+            box-shadow: 0 4px 20px rgba(184, 169, 201, 0.25);
+        }
+        .search-box .icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            opacity: 0.5;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 30px;
+            background: var(--card-bg);
+            color: var(--text-light);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        .filter-btn:hover {
+            transform: translateY(-2px);
+        }
+        .filter-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(184, 169, 201, 0.35);
+        }
+        .filter-btn.important {
+            background: var(--accent-light);
+            color: var(--text);
+        }
+        .filter-btn.important.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        .filter-btn.lesson {
+            background: var(--yellow);
+            color: var(--text);
+        }
+        .filter-btn.lesson.active {
+            background: #d4c09d;
+            color: #fff;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 30px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 14px rgba(184, 169, 201, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(184, 169, 201, 0.4);
+        }
+        .btn-primary.outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: none;
+        }
+        .btn-primary.outline:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 8px;
+        }
+
+        .card {
+            perspective: 1200px;
+            height: 300px;
+            cursor: pointer;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            background: var(--card-bg);
+            box-shadow: 0 4px 20px var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .card-face::-webkit-scrollbar {
+            width: 4px;
+        }
+        .card-face::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+
+        .card-front {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+        .card-front .badge {
+            font-size: 11px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .card-front .badge.important {
+            background: var(--accent-light);
+            color: #b06a66;
+        }
+        .card-front .badge.mastered {
+            background: var(--green-light);
+            color: #5f7a5a;
+        }
+        .card-front .badge.lesson {
+            background: var(--yellow);
+            color: #7a6a40;
+        }
+        .card-front h3 {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text);
+        }
+        .card-front .hint {
+            font-size: 13px;
+            color: var(--text-light);
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+        .card-front .flip-icon {
+            font-size: 28px;
+            opacity: 0.3;
+            transition: var(--transition);
+        }
+        .card:hover .flip-icon {
+            opacity: 0.7;
+            transform: scale(1.1);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            justify-content: flex-start;
+            align-items: flex-start;
+            text-align: left;
+            background: var(--card-bg);
+            border-left: 4px solid var(--primary-light);
+        }
+        .card-back .back-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .card-back .back-body {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text);
+            flex: 1;
+            overflow-y: auto;
+            width: 100%;
+        }
+        .card-back .back-body strong {
+            color: var(--primary-dark);
+        }
+        .card-back .back-body .highlight {
+            background: var(--yellow);
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #4a3f2a;
+        }
+        .card-back .back-body .mnemonic {
+            background: var(--blue-light);
+            padding: 8px 14px;
+            border-radius: 10px;
+            margin: 10px 0 6px;
+            font-size: 13px;
+            border-left: 3px solid var(--blue);
+            color: #2a4050;
+        }
+        .card-back .back-body .mnemonic strong {
+            color: var(--primary-dark);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .card-actions button {
+            border: none;
+            background: var(--bg);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .card-actions button:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        .card-actions .master-btn.mastered {
+            background: var(--green-light);
+            color: #3d6b3a;
+        }
+
+        .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        .empty .big {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* ===== 自测模态 ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(60, 50, 45, 0.5);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            max-width: 760px;
+            width: 100%;
+            max-height: 90vh;
+            padding: 32px 36px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            position: relative;
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 28px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+        .modal-close:hover {
+            transform: rotate(90deg);
+            color: var(--text);
+        }
+        .modal h2 {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: var(--primary-dark);
+        }
+        .modal .sub {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .modal .question {
+            font-size: 18px;
+            font-weight: 500;
+            padding: 16px 0 12px;
+            border-top: 2px dashed var(--bg);
+            margin-top: 8px;
+        }
+        .modal .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 12px 0 16px;
+        }
+        .modal .options label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: var(--bg);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            font-size: 15px;
+        }
+        .modal .options label:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+        .modal .options input[type="radio"] {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+        .modal .options label.correct {
+            background: var(--green-light);
+            border-color: var(--green);
+        }
+        .modal .options label.wrong {
+            background: var(--accent-light);
+            border-color: var(--accent);
+        }
+        .modal .result-box {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin: 12px 0 16px;
+            font-size: 15px;
+            line-height: 1.7;
+            display: none;
+        }
+        .modal .result-box.show {
+            display: block;
+        }
+        .modal .result-box.correct {
+            background: var(--green-light);
+            border-left: 4px solid var(--green);
+        }
+        .modal .result-box.wrong {
+            background: var(--accent-light);
+            border-left: 4px solid var(--accent);
+        }
+        .modal .progress-text {
+            font-size: 14px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .modal .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 6px;
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 16px 18px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .stats {
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                height: 280px;
+            }
+            .modal {
+                padding: 24px 20px;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                justify-content: center;
+            }
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            background: var(--blue-light);
+            color: #5a7a8a;
+            font-weight: 500;
+        }
+        .tag.green {
+            background: var(--green-light);
+            color: #4d6b48;
+        }
+        .tag.pink {
+            background: var(--accent-light);
+            color: #a06a66;
+        }
+        .tag.purple {
+            background: var(--primary-light);
+            color: #7a6a8a;
+        }
+        .tag.yellow {
+            background: var(--yellow);
+            color: #6a5a30;
+        }
+
+        .confetti-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            overflow: hidden;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-20px) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" id="app">
+        <header class="header">
+            <h1>
+                📚 学前儿童游戏
+                <small>书本校准 · 记忆技巧 · 教案大纲</small>
+            </h1>
+            <div class="stats">
+                <span>📖 总 <span class="num" id="totalCount">0</span></span>
+                <span>⭐ 重点 <span class="num" id="importantCount">0</span></span>
+                <span>✅ 已掌握 <span class="num" id="masteredCount">0</span></span>
+                <button class="btn-primary outline" id="quizBtn" style="padding:6px 18px;font-size:13px;">
+                    🧠 自测
+                </button>
+            </div>
+        </header>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="搜索知识点或教案..." />
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn important" data-filter="important">⭐ 重点</button>
+                <button class="filter-btn lesson" data-filter="教案">📝 教案</button>
+                <button class="filter-btn" data-filter="游戏导论">📖 导论</button>
+                <button class="filter-btn" data-filter="角色游戏">🎭 角色</button>
+                <button class="filter-btn" data-filter="表演游戏">🎪 表演</button>
+                <button class="filter-btn" data-filter="结构游戏">🧱 结构</button>
+                <button class="filter-btn" data-filter="体育游戏">🏃 体育</button>
+                <button class="filter-btn" data-filter="智力游戏">🧩 智力</button>
+                <button class="filter-btn" data-filter="其他游戏">🎨 其他</button>
+            </div>
+        </div>
+
+        <div class="grid" id="cardGrid"></div>
+    </div>
+
+    <!-- 自测模态 -->
+    <div class="modal-overlay" id="quizModal">
+        <div class="modal">
+            <button class="modal-close" id="quizClose">✕</button>
+            <h2>🧠 自测模式 · 书本精析</h2>
+            <div class="sub">每道题均源自教材，配有记忆技巧和逐项解析</div>
+            <div id="quizContent">
+                <div class="progress-text" id="quizProgress">第 1 / 10 题</div>
+                <div class="question" id="quizQuestion">加载中...</div>
+                <div class="options" id="quizOptions"></div>
+                <div class="result-box" id="quizResult"></div>
+                <div class="btn-row">
+                    <button class="btn-primary" id="quizNext">下一题 →</button>
+                    <button class="btn-primary outline" id="quizReset">🔄 重新开始</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  1. 知识点数据（严格校准书本，含记忆技巧 + 高亮）
+        // ============================================================
+        const data = [{
+            id: 1,
+            category: '游戏导论',
+            title: '幼儿游戏与成人游戏的根本区别',
+            content: `① <span class="highlight">地位不同</span>：幼儿“游戏即生活”，游戏是幼儿一日生活中的基本活动形式；成人游戏只是相对次要的部分。<br>
+                    ② <span class="highlight">心理状态不同</span>：幼儿缺乏泾渭分明的“界线意识”，常在游戏中有在日常生活中的朦胧感；成人意识明确，能清晰区分游戏与非游戏。<br>
+                    ③ <span class="highlight">内容不同</span>：幼儿游戏多为隐性规则的自然游戏，获得本能性、原始性乐趣；成人多为强规则、竞技性游戏。<br>
+                    ④ <span class="highlight">驱动力不同</span>：幼儿驱动力直接内在，“为了游戏而游戏”；成人多有外在功利性动机。<br>
+                    ⑤ <span class="highlight">价值功能不同</span>：幼儿游戏具有探索、求知、发育身心的重要作用；成人游戏则不再具有此功能。`,
+            mnemonic: '💡 <strong>记忆技巧（5个“不”/“多”）</strong>：<br>地位不同（基本vs次要）、心理不同（模糊vs清晰）、内容不同（弱规则vs强规则）、驱动力不同（内在vs外在）、功能不同（发展vs无）。',
+            important: true,
+            quiz: {
+                question: '以下哪项不属于幼儿游戏与成人游戏的根本区别？',
+                options: [
+                    'A. 游戏在各自生活中的地位不同，幼儿“游戏即生活”',
+                    'B. 游戏的心理状态不同，幼儿缺乏界线意识',
+                    'C. 游戏的内容不同，幼儿游戏多为强规则',
+                    'D. 游戏的驱动力不同，幼儿是内在直接驱动'
+                ],
+                correct: 'C',
+                explanation: `✅ <strong>正确选项：C</strong> —— 幼儿游戏与成人游戏在内容上的区别恰恰相反：幼儿游戏多为“隐性规则”的自然游戏，成人游戏则多为“强规则”的竞技性游戏。<br><br>💡 <strong>记忆技巧</strong>：幼儿“弱规则”，成人“强规则”。`
+            }
+        }, {
+            id: 2,
+            category: '游戏导论',
+            title: '幼儿游戏的基本特征',
+            content: `① <span class="highlight">“兴趣主义”的活动</span>：幼儿是天生的“兴趣主义者”，活动受情绪化的兴趣支配，活泼好动。<br>
+                    ② <span class="highlight">“自发性的自主”活动</span>：由情感冲动引起，是“我要玩”而不是“要我玩”，游戏过程绝对自控，不服从外部压力。<br>
+                    ③ <span class="highlight">“重过程”的自娱活动</span>：从“重过程不重结果”发展到“过程与结果并重”，专注的是饶有趣味的游戏本身。`,
+            mnemonic: '💡 <strong>记忆技巧（“兴自过”三字诀）</strong>：<br>“兴”=兴趣主义；“自”=自发自主；“过”=重过程。<br>幼儿游戏就是“跟着兴趣走，自己说了算，过程最重要”。',
+            important: true,
+            quiz: {
+                question: '幼儿游戏的基本特征不包括以下哪项？',
+                options: [
+                    'A. “兴趣主义”的活动',
+                    'B. “自发性的自主”活动',
+                    'C. “重过程”的自娱活动',
+                    'D. “强目标”的结果导向活动'
+                ],
+                correct: 'D',
+                explanation: `✅ <strong>正确选项：D</strong> —— 幼儿游戏不追求外部强加的目标，是“重过程”的。<br><br>💡 <strong>记忆技巧</strong>：记住“兴自过”，凡是不符合这三个字的（如“强目标”），就是错的。`
+            }
+        }, {
+            id: 3,
+            category: '游戏导论',
+            title: '游戏的本质特征',
+            content: `① <span class="highlight">内在需要的自愿活动</span>：动机来自内部需要，非外部强制。<br>
+                    ② <span class="highlight">“日常生活”的表征</span>：具有虚拟性和隐喻性，不是生活本身。<br>
+                    ③ <span class="highlight">富有选设性的自足乐趣</span>：乐趣自足于游戏者本身，不依赖外部评价。<br>
+                    ④ <span class="highlight">有规则的活动</span>：包含显规则（明确规定的）和潜规则（约定俗成的）。`,
+            mnemonic: '💡 <strong>记忆技巧（“自愿、表征、自足、规则”）</strong>：<br>本质四要素：自愿（内部动机）、表征（虚拟性）、自足（乐趣内源）、规则（显+潜）。',
+            important: false,
+            quiz: {
+                question: '关于游戏的本质特征，以下哪项是书中明确提到的？',
+                options: [
+                    'A. 游戏是一种被迫的任务',
+                    'B. 游戏是对现实生活的直接复制',
+                    'C. 游戏是富有选设性的自足乐趣',
+                    'D. 游戏完全没有规则约束'
+                ],
+                correct: 'C',
+                explanation: `✅ <strong>正确选项：C</strong> —— “自足乐趣”是本质特征之一。<br><br>💡 <strong>记忆技巧</strong>：排除法，A“被迫”违反“自愿”，B“直接复制”违反“表征”，D“没规则”违反“有规则”。`
+            }
+        }, {
+            id: 7,
+            category: '角色游戏',
+            title: '角色游戏的概念',
+            content: `幼儿根据自己的兴趣和愿望，以<span class="highlight">模仿和想象</span>，通过<span class="highlight">角色扮演</span>，创造性地表现其<span class="highlight">生活体验</span>的活动。<br><br>
+                    是幼儿期最典型的游戏，<span class="highlight">2~3岁产生，学前晚期达到最高峰</span>。角色游戏集中反映了幼儿游戏的基本特点，是心理学家研究幼儿心理发展的重要途径。`,
+            mnemonic: '💡 <strong>记忆技巧（“两模一表”）</strong>：<br>“模仿”+“想象”= 手段；“角色扮演”= 核心；“生活体验”= 内容。<br>时间节点：2-3岁产生，学前晚期（5-6岁）高峰。',
+            important: true,
+            quiz: {
+                question: '角色游戏是幼儿期最典型的游戏，其产生和高峰时期是？',
+                options: [
+                    'A. 1岁产生，3岁达到高峰',
+                    'B. 2-3岁产生，学前晚期达到高峰',
+                    'C. 出生即有，4岁达到高峰',
+                    'D. 3岁产生，6岁达到高峰'
+                ],
+                correct: 'B',
+                explanation: `✅ <strong>正确选项：B</strong> —— 书本第26页明确指出。<br><br>💡 <strong>记忆技巧</strong>：“2-3岁产生”对应“开始会假装”，“学前晚期高峰”对应“大班最会玩”。`
+            }
+        }, {
+            id: 10,
+            category: '角色游戏',
+            title: '角色游戏对幼儿社会性发展的作用',
+            content: `① <span class="highlight">发展自我意识</span>：促进从他人角度看问题，克服“自我中心”思维。<br>
+                    ② <span class="highlight">促进同伴交往</span>：游戏中结成现实伙伴关系和角色关系，锻炼协商、轮流、分享等交往技巧。<br>
+                    ③ <span class="highlight">践行社会规则</span>：是幼儿对将来社会生活的预演，加深社会认知，习得合理行为方式。<br>
+                    ④ <span class="highlight">促进社会性情感</span>：表露和抒发情感，增加控制环境的机会，获得成功的满足，增强同情心和责任感。`,
+            mnemonic: '💡 <strong>记忆技巧（“自交规情”四字诀）</strong>：<br>“自”=自我意识；“交”=同伴交往；“规”=社会规则；“情”=社会情感。<br>角色游戏就是让幼儿“认识自己、学会交往、遵守规则、体验情感”。',
+            important: true,
+            quiz: {
+                question: '角色游戏对幼儿社会性发展的作用，以下哪项是书中没有提到的？',
+                options: [
+                    'A. 发展恰当的自我意识',
+                    'B. 促进同伴交往',
+                    'C. 提供践行社会规则的机会',
+                    'D. 直接提高数学逻辑能力'
+                ],
+                correct: 'D',
+                explanation: `✅ <strong>正确选项：D</strong> —— 数学逻辑不属于社会性发展。<br><br>💡 <strong>记忆技巧</strong>：记住“自交规情”，D选项的“数学”不在此列。`
+            }
+        }, {
+            id: 11,
+            category: '角色游戏',
+            title: '小班角色游戏的特点',
+            content: `特点：<span class="highlight">依赖玩具</span>，面前有什么就玩什么；处于<span class="highlight">平行游戏高峰期</span>，喜欢模仿他人；<span class="highlight">角色意识不强</span>，往往意识不到自己正在扮演某一角色。<br><br>
+                    指导要点：提供<span class="highlight">种类少、数量多</span>的成品玩具；以角色身份参与游戏，用游戏口吻指导；培养游戏常规。`,
+            mnemonic: '💡 <strong>记忆技巧（“玩、仿、忘”）</strong>：<br>“玩”=依赖玩具；“仿”=平行模仿；“忘”=忘记自己是角色。<br>指导：少种多量，教师扮角色。',
+            important: true,
+            quiz: {
+                question: '小班幼儿角色游戏的特点不包括以下哪项？',
+                options: [
+                    'A. 依赖玩具，平行游戏',
+                    'B. 角色意识不强',
+                    'C. 主题明确且稳定',
+                    'D. 无明确主题，重复同样动作'
+                ],
+                correct: 'C',
+                explanation: `✅ <strong>正确选项：C</strong> —— 小班主题不稳定。<br><br>💡 <strong>记忆技巧</strong>：“小班乱，中班变，大班稳”。小班就是“乱”玩，主题不明确。`
+            }
+        }, {
+            id: 12,
+            category: '角色游戏',
+            title: '中班角色游戏的特点',
+            content: `特点：内容比小班丰富，但<span class="highlight">主题不稳定</span>；角色意识较强，处于<span class="highlight">联合游戏阶段</span>；<span class="highlight">交往愿望强</span>，但交往技能欠缺，常发生纠纷。<br><br>
+                    指导要点：增加半成品和废旧材料；引导拓展主题、设计情节；引导学会解决纠纷，掌握交往规范。`,
+            mnemonic: '💡 <strong>记忆技巧（“联、乱、吵”）</strong>：<br>“联”=联合游戏；“乱”=主题不稳；“吵”=交往多易纠纷。<br>指导：给材料，引情节，教解决。',
+            important: true,
+            quiz: {
+                question: '中班幼儿角色游戏的特点，描述正确的是？',
+                options: [
+                    'A. 处于合作游戏阶段，主题稳定',
+                    'B. 联合游戏阶段，主题不稳定，交往愿望强',
+                    'C. 处于平行游戏高峰，角色意识弱',
+                    'D. 游戏主题新颖多样，独立性强'
+                ],
+                correct: 'B',
+                explanation: `✅ <strong>正确选项：B</strong> —— 中班是“联合游戏”，主题不稳，交往强。<br><br>💡 <strong>记忆技巧</strong>：记住“联乱吵”，合作是“大班”的事。`
+            }
+        }, {
+            id: 13,
+            category: '角色游戏',
+            title: '大班角色游戏的特点',
+            content: `特点：内容丰富，主题新颖多样，能反映复杂人际关系；处于<span class="highlight">合作游戏阶段</span>，<span class="highlight">独立性和计划性强</span>；游戏规则更复杂，解决问题能力加强。<br><br>
+                    指导要点：培养独立开展游戏的能力；多用提问、建议等语言形式指导；鼓励解决问题；给予更多表现和评价空间。`,
+            mnemonic: '💡 <strong>记忆技巧（“合、独、强”）</strong>：<br>“合”=合作游戏；“独”=独立性；“强”=计划性、解决问题能力强。<br>指导：放手让幼儿自己做，教师多问少帮。',
+            important: true,
+            quiz: {
+                question: '大班幼儿角色游戏的特点中，以下哪项描述正确？',
+                options: [
+                    'A. 处于平行游戏阶段',
+                    'B. 合作游戏阶段，独立性和计划性强',
+                    'C. 主题不稳定，经常半路换场',
+                    'D. 交往技能强，无纠纷'
+                ],
+                correct: 'B',
+                explanation: `✅ <strong>正确选项：B</strong> —— 大班是“合作游戏”，独立计划性强。<br><br>💡 <strong>记忆技巧</strong>：记住“合独强”，A是“小班”，C是“中班”，D“无纠纷”太绝对。`
+            }
+        }, {
+            id: 15,
+            category: '表演游戏',
+            title: '表演游戏的概念',
+            content: `幼儿根据<span class="highlight">故事或童话等文学作品</span>的内容和情节，通过<span class="highlight">角色扮演</span>，运用<span class="highlight">语言、动作和表情</span>进行表演的一种游戏形式。<br><br>
+                    爱听故事是幼儿的天性。表演游戏包括童话剧、歌舞剧、木偶剧、皮影戏等。`,
+            mnemonic: '💡 <strong>记忆技巧（“文、角、语动表”）</strong>：<br>“文”=文学作品（来源）；“角”=角色扮演（方式）；“语动表”=语言、动作、表情（手段）。<br>区别于角色游戏：内容源于“文学作品”而非“生活”。',
+            important: true,
+            quiz: {
+                question: '表演游戏的内容来源主要是？',
+                options: [
+                    'A. 周围真实的生活',
+                    'B. 虚构的童话或故事等文学作品',
+                    'C. 幼儿自身的幻想',
+                    'D. 成人的指令'
+                ],
+                correct: 'B',
+                explanation: `✅ <strong>正确选项：B</strong> —— 表演游戏的内容是文学作品。<br><br>💡 <strong>记忆技巧</strong>：表演游戏=“演故事”，角色游戏=“过家家”。`
+            }
+        }, {
+            id: 16,
+            category: '表演游戏',
+            title: '表演游戏的特点',
+            content: `① <span class="highlight">艺术表演活动</span>：以文学作品为内容来源，需要一定的表演技能，比角色游戏更具戏剧成分。<br>
+                    ② <span class="highlight">创造性的自娱活动</span>：自主、自发，对作品进行再创造，不为观众而演，道具灵活，多由幼儿自制。`,
+            mnemonic: '💡 <strong>记忆技巧（“艺、创、自”）</strong>：<br>“艺”=艺术表演（有戏剧性）；“创”=创造性（再创造）；“自”=自娱（不为观众）。',
+            important: false,
+            quiz: {
+                question: '表演游戏与角色游戏最大的不同在于？',
+                options: [
+                    'A. 都需要角色扮演',
+                    'B. 都具有创造性',
+                    'C. 内容来源不同，表演游戏以文学作品为蓝本',
+                    'D. 都具有自娱性'
+                ],
+                correct: 'C',
+                explanation: `✅ <strong>正确选项：C</strong> —— 内容来源是根本区别。<br><br>💡 <strong>记忆技巧</strong>：其他选项都是共同点，只有C是不同点。`
+            }
+        }, {
+            id: 19,
+            category: '表演游戏',
+            title: '小班表演游戏的特点与指导',
+            content: `特点：<span class="highlight">兴趣大</span>，有创造性，会改动句子；<span class="highlight">语音不够准确</span>，角色意识不强。<br><br>
+                    指导：帮助选择感兴趣的故事；多进行<span class="highlight">示范表演</span>；提供形状逼真的服装和道具以激发投入。`,
+            mnemonic: '💡 <strong>记忆技巧（“兴、音、示”）</strong>：<br>“兴”=兴趣大；“音”=语音不准；“示”=多示范。<br>小班表演就是“爱玩但说不清”，教师要做榜样。',
+            important: true,
+            quiz: {
+                question: '小班表演游戏的特点，以下哪项描述正确？',
+                options: [
+                    'A. 能独立分配角色，角色意识强',
+                    'B. 兴趣大，但语音不够准确，角色意识不强',
+                    'C. 目的性强，能坚持游戏主题',
+                    'D. 表现力强，能塑造角色'
+                ],
+                correct: 'B',
+                explanation: `✅ <strong>正确选项：B</strong> —— 小班语音不准、角色意识弱。<br><br>💡 <strong>记忆技巧</strong>：A、C、D都是大班特点。`
+            }
+        }, {
+            id: 20,
+            category: '表演游戏',
+            title: '中班表演游戏的特点与指导',
+            content: `特点：能独立分配角色但<span class="highlight">更换意识不强</span>；<span class="highlight">目的性差，嬉戏性强</span>，需要教师提醒才能坚持主题；以一般性表演为主。<br><br>
+                    指导：选择有简短对话、重复动作的故事；设置固定表演区；提供<span class="highlight">简单易操作的材料（2~4种）</span>。`,
+            mnemonic: '💡 <strong>记忆技巧（“换、嬉、简”）</strong>：<br>“换”=角色更换意识弱；“嬉”=嬉戏性强；“简”=材料种类少（2-4种）。<br>中班表演“玩心重，容易跑题”，材料要精不要多。',
+            important: true,
+            quiz: {
+                question: '中班幼儿的表演游戏与小班相比，主要特点是？',
+                options: [
+                    'A. 角色分配完全独立且稳定',
+                    'B. 能独立分配角色，但更换意识不强，嬉戏性强',
+                    'C. 已经完全摆脱嬉戏性，专注表演',
+                    'D. 以创造性表演为主'
+                ],
+                correct: 'B',
+                explanation: `✅ <strong>正确选项：B</strong> —— 中班能分角色但不稳，嬉戏性强。<br><br>💡 <strong>记忆技巧</strong>：A、C、D描述的是大班，B才是中班的“中间态”。`
+            }
+        }, {
+            id: 21,
+            category: '表演游戏',
+            title: '大班表演游戏的特点与指导',
+            content: `特点：独立完成角色分配，角色认同快；<span class="highlight">表现力强</span>，能根据理解塑造角色；能灵活运用语言、动作、表情。<br><br>
+                    指导：<span class="highlight">尽可能少干预</span>；及时反馈，注重角色塑造；提供录像资源供借鉴；多组织反思性谈话和小组讨论。`,
+            mnemonic: '💡 <strong>记忆技巧（“强、塑、放”）</strong>：<br>“强”=表现力强；“塑”=塑造角色；“放”=放手少干预。<br>大班表演“很会演”，教师只需当好观众和评论员。',
+            important: true,
+            quiz: {
+                question: '大班表演游戏的核心特点是什么？',
+                options: [
+                    'A. 依赖教师示范，角色意识弱',
+                    'B. 独立分配角色，表现力强，能塑造角色',
+                    'C. 游戏情节简单，以动作为主',
+                    'D. 语音不准，需要大量正音练习'
+                ],
+                correct: 'B',
+                explanation: `✅ <strong>正确选项：B</strong> —— 大班独立、表现力强、能塑造角色。<br><br>💡 <strong>记忆技巧</strong>：A是小班，C是中班，D是小班，B是大班。`
+            }
+        }, {
+            id: 25,
+            category: '结构游戏',
+            title: '结构游戏的教育作用（五大领域）',
+            content: `① <span class="highlight">健康（动作发展）</span>：能使幼儿的基本动作，特别是手的动作获得协调发展，锻炼手指、手腕、手臂肌肉的力度和灵活性，促进手眼协调。<br>
+                    ② <span class="highlight">语言</span>：发展幼儿的语言表达能力和相互交流能力，在合作建构和评议建构成果中，幼儿通过讨论、介绍、评价等方式提升语言运用能力。<br>
+                    ③ <span class="highlight">社会</span>：培养细心、耐心、坚持克服困难等优良个性品质；提供更多合作游戏机会，养成团结友爱、友好协作的良好习惯和集体观念。<br>
+                    ④ <span class="highlight">科学（数学）</span>：丰富幼儿的知识、经验，理解结构特征、大小、轻重、高矮、空间方位（上下、中间、旁边等），掌握一一对应、计数、序列、整体、部分、重心、平衡等数理概念。<br>
+                    ⑤ <span class="highlight">艺术</span>：对幼儿的美育有特殊作用，是感受美、欣赏美、表现美的过程，也是艺术感受力、表现力不断提高的过程。`,
+            mnemonic: '💡 <strong>记忆技巧（“健语社科普/艺”）</strong>：<br>按五大领域记：<br>“健”=健康（手部动作）；“语”=语言（交流）；“社”=社会（合作品质）；“科”=科学（数理空间）；“艺”=艺术（审美）。<br>注意：不是“数学”，而是“科学（含数学）”。',
+            important: true,
+            quiz: {
+                question: '结构游戏的教育作用涵盖五大领域，以下哪项是书中明确提到的？',
+                options: [
+                    'A. 健康：促进手部动作协调发展',
+                    'B. 语言：直接增加识字量',
+                    'C. 社会：培养竞争意识',
+                    'D. 艺术：提高绘画技巧'
+                ],
+                correct: 'A',
+                explanation: `✅ <strong>正确选项：A</strong> —— 结构游戏促进手部动作，属于健康领域。<br><br>💡 <strong>记忆技巧</strong>：B“识字”不对（是语言表达），C“竞争”不对（是合作），D“绘画”不对（是审美感受）。`
+            }
+        }, {
+            id: 44,
+            category: '智力游戏',
+            title: '发展思维能力的智力游戏（主要内容）',
+            content: `① <span class="highlight">发展概念理解能力</span>：通过概念名称、内涵、外延的问答游戏。<br>
+                    ② <span class="highlight">发展分类、比较及序列化能力</span>：包括分类归类、比较（图形寻异、图形填充）、排列。<br>
+                    ③ <span class="highlight">发展逻辑判断和推理能力</span>：涵盖类比推理、演绎推理、运算推理和逻辑推理（排图讲述）。<br>
+                    ④ <span class="highlight">发展综合思维能力</span>：通过棋类、牌类游戏训练。<br><br>
+                    核心思路：从具体形象思维向抽象逻辑思维发展。`,
+            mnemonic: '💡 <strong>记忆技巧（“概、分、逻、综”）</strong>：<br>“概”=概念理解；“分”=分类比较；“逻”=逻辑推理；“综”=综合（棋牌）。<br>按四个层次记忆：从基础到综合。',
+            important: true,
+            quiz: {
+                question: '发展思维能力的智力游戏主要内容不包括以下哪项？',
+                options: [
+                    'A. 发展概念理解能力',
+                    'B. 发展分类、比较及序列化能力',
+                    'C. 发展逻辑判断和推理能力',
+                    'D. 发展听觉分辨能力'
+                ],
+                correct: 'D',
+                explanation: `✅ <strong>正确选项：D</strong> —— 听觉分辨属于观察力游戏。<br><br>💡 <strong>记忆技巧</strong>：记住“概分逻综”，D“听觉”属于“观察力”范畴，不属于“思维”。`
+            }
+        }, {
+            id: 30,
+            category: '结构游戏',
+            title: '结构游戏指导的基本任务',
+            content: `① 激发幼儿参与结构游戏的<span class="highlight">兴趣</span><br>
+                    ② 引导幼儿对物体进行<span class="highlight">观察</span>（多渠道、多方位、对比性观察）<br>
+                    ③ 提供必要的<span class="highlight">物质条件</span>（时间、场地、材料）<br>
+                    ④ 帮助幼儿掌握建构的<span class="highlight">基本知识和技能</span>（识别材料、操作技能、设计构思、分工合作）<br>
+                    ⑤ 引导和鼓励幼儿<span class="highlight">创造性地建构</span>（教给创造方法，适时启发）<br>
+                    ⑥ 培养幼儿<span class="highlight">良好的行为习惯</span>（爱护材料、珍惜成果）`,
+            mnemonic: '💡 <strong>记忆技巧（“兴、观、物、技、创、习”）</strong>：<br>六个关键词：兴趣→观察→物质→技能→创造→习惯。<br>逻辑链条：先有兴趣，再教方法，最后养成好习惯。',
+            important: false,
+            quiz: {
+                question: '结构游戏指导的基本任务，以下哪项是书中没有提到的？',
+                options: [
+                    'A. 激发幼儿参与结构游戏的兴趣',
+                    'B. 引导幼儿对物体进行观察',
+                    'C. 帮助幼儿掌握建构的基本知识和技能',
+                    'D. 直接规定幼儿的建构主题'
+                ],
+                correct: 'D',
+                explanation: `✅ <strong>正确选项：D</strong> —— 规定主题会扼杀创造性。<br><br>💡 <strong>记忆技巧</strong>：指导任务是“支架”而不是“控制”，D选项是“控制”。`
+            }
+        }, {
+            id: 31,
+            category: '体育游戏',
+            title: '体育游戏的概念',
+            content: `根据一定的<span class="highlight">体育任务</span>设计的，由<span class="highlight">身体动作、情节、角色和规则</span>组成的一种活动性游戏。<br><br>
+                    是幼儿体育活动的主要形式，内容丰富有趣，形式活泼多样。`,
+            mnemonic: '💡 <strong>记忆技巧（“身、情、角、规”）</strong>：<br>四个核心要素：身体动作、情节、角色、规则。<br>口诀：体育游戏“有身体（动作），有故事（情节），有人物（角色），有规矩（规则）”。',
+            important: false,
+            quiz: {
+                question: '体育游戏的定义，以下哪项正确？',
+                options: [
+                    'A. 以智力活动为基础的有规则游戏',
+                    'B. 由身体动作、情节、角色和规则组成的活动性游戏',
+                    'C. 幼儿根据文学作品进行的表演活动',
+                    'D. 利用结构材料构造物体的游戏'
+                ],
+                correct: 'B',
+                explanation: `✅ <strong>正确选项：B</strong> —— 符合定义。<br><br>💡 <strong>记忆技巧</strong>：A是“智力游戏”，C是“表演游戏”，D是“结构游戏”。`
+            }
+        }, {
+            id: 35,
+            category: '体育游戏',
+            title: '体育游戏的创编步骤',
+            content: `① 明确<span class="highlight">游戏目的</span><br>
+                    ② 选择<span class="highlight">游戏动作</span><br>
+                    ③ 构思<span class="highlight">游戏结构</span>（情节 + 活动方式）<br>
+                    ④ 设计<span class="highlight">游戏细节</span>（分队、起动信号、儿歌等）<br>
+                    ⑤ 制定<span class="highlight">游戏规则</span><br>
+                    ⑥ 确定<span class="highlight">游戏名称</span>`,
+            mnemonic: '💡 <strong>记忆技巧（“目、动、结、细、规、名”）</strong>：<br>顺口溜：<br>“目的动作先定好，结构情节不能少，细节规则要周到，最后起个响亮名。”',
+            important: false,
+            quiz: {
+                question: '体育游戏创编的正确步骤顺序是？',
+                options: [
+                    'A. 目的→动作→结构→细节→规则→名称',
+                    'B. 动作→目的→规则→名称→细节',
+                    'C. 名称→规则→动作→目的',
+                    'D. 结构→细节→目的→动作'
+                ],
+                correct: 'A',
+                explanation: `✅ <strong>正确选项：A</strong> —— 完全符合书本顺序。<br><br>💡 <strong>记忆技巧</strong>：按“先想好干什么（目的），再想怎么做（动作/结构），最后完善细节（规则/名称）”的逻辑来记。`
+            }
+        }, {
+            id: 46,
+            category: '其他游戏',
+            title: '语言游戏',
+            content: `① <span class="highlight">听音、发音游戏</span>：辨音训练，正音练习（儿歌、绕口令）。<br>
+                    ② <span class="highlight">词汇游戏</span>：丰富词汇，正确运用（组词、接龙、反义词、同义词）。<br>
+                    ③ <span class="highlight">句子游戏</span>：训练组词成句，运用各种句式句型。<br><br>
+                    语言发展规律：听音→发音→模仿→理解→积极→掌握运用`,
+            mnemonic: '💡 <strong>记忆技巧（“听、词、句”）</strong>：<br>“听”=听音发音；“词”=词汇；“句”=句子。<br>由小到大：从音到词再到句。',
+            important: false
+        }, {
+            id: 50,
+            category: '其他游戏',
+            title: '集体娱乐游戏 & 婴幼儿游戏',
+            content: `<span class="highlight">集体娱乐游戏</span>：组织大型联欢、节日活动；主持技巧：热情、灵活、掌控节奏。<br><br>
+                    <span class="highlight">0~2岁婴幼儿游戏</span>：<br>
+                    ① 0~1岁：感觉运动游戏（抓握、摇铃、躲猫猫）<br>
+                    ② 1~2岁：探索性游戏（推拉、倒物、简单模仿）<br>
+                    ③ 2~3岁：象征性游戏萌芽（假装、角色扮演）`,
+            mnemonic: '💡 <strong>记忆技巧（“感、探、象”）</strong>：<br>0-1岁“感”觉运动；1-2岁“探”索性；2-3岁“象”征性萌芽。<br>越长大越复杂。',
+            important: false
+        }, {
+            id: 101,
+            category: '教案',
+            title: '📝 益智游戏教案大纲（示例1：中班“图形宝宝找家”）',
+            content: `🎯 <span class="highlight">活动目标</span>：<br>
+                    1. 能够按颜色、形状等特征对图形进行分类。<br>
+                    2. 发展观察、比较和分类能力。<br>
+                    3. 体验数学游戏的乐趣。<br><br>
+                    🛠 <span class="highlight">活动准备</span>：<br>
+                    1. 红、黄、蓝三种颜色的圆形、三角形、正方形卡片若干。<br>
+                    2. 三个贴有颜色标记和形状标记的“家”的收纳盒。<br><br>
+                    🎮 <span class="highlight">活动玩法</span>：<br>
+                    1. 导入：情境创设“图形宝宝迷路了，请小朋友送它们回家”。<br>
+                    2. 玩法：幼儿自由选择一张图形卡片，观察其颜色和形状，将其放入对应的“家”（例如：红色圆形放入红色标记的家）。<br>
+                    3. 提高难度（大班）：增加“双重维度”指令，如“请把红色的三角形送到蓝色标记的家里”（改变规则）。<br><br>
+                    📝 <span class="highlight">规则</span>：<br>
+                    1. 每次只能拿一张图形卡片。<br>
+                    2. 送完后回座位，不可争抢。<br><br>
+                    🗣 <span class="highlight">指导要点</span>：<br>
+                    教师巡回观察，重点引导幼儿说出“为什么把它送这里”（语言表达）。`,
+            mnemonic: '💡 <strong>编写教案逻辑</strong>：目标→准备→玩法（含导入+过程）→规则→指导要点。',
+            important: false,
+            isLesson: true
+        }, {
+            id: 102,
+            category: '教案',
+            title: '📝 益智游戏教案大纲（示例2：大班“数字接龙棋”）',
+            content: `🎯 <span class="highlight">活动目标</span>：<br>
+                    1. 练习10以内的加减运算。<br>
+                    2. 发展逻辑思维和合作能力。<br>
+                    3. 喜欢参与棋类益智游戏。<br><br>
+                    🛠 <span class="highlight">活动准备</span>：<br>
+                    1. 自制棋盘（格子内写有数字或加减算式）。<br>
+                    2. 骰子（数字1-3）、棋子若干。<br><br>
+                    🎮 <span class="highlight">活动玩法</span>：<br>
+                    1. 2-4名幼儿为一组，从起点开始掷骰子前进。<br>
+                    2. 落到“算式格”时，需算出正确答案才能停驻，否则后退一格。<br>
+                    3. 先到终点者为胜。<br><br>
+                    📝 <span class="highlight">规则</span>：<br>
+                    1. 按顺序掷骰子。<br>
+                    2. 必须自己计算，同伴可以辅助检查。<br><br>
+                    🗣 <span class="highlight">指导要点</span>：<br>
+                    鼓励幼儿互相检查答案，避免直接告诉结果，引导其运用数的组成进行推算。`,
+            mnemonic: '💡 <strong>编写要点</strong>：结合数学核心经验，让规则具有“挑战性”和“自我纠错”功能。',
+            important: false,
+            isLesson: true
+        }, {
+            id: 103,
+            category: '教案',
+            title: '📝 体育游戏教案大纲（示例1：小班“小兔跳跳跳”）',
+            content: `🎯 <span class="highlight">活动目标</span>：<br>
+                    1. 练习双脚向前行进跳。<br>
+                    2. 发展下肢力量和身体协调性。<br>
+                    3. 体验模仿小动物的快乐。<br><br>
+                    🛠 <span class="highlight">活动准备</span>：<br>
+                    1. 小兔头饰若干、大灰狼头饰1个。<br>
+                    2. 设置起点、终点（胡萝卜地），中间放置软垫（草地）。<br><br>
+                    🎮 <span class="highlight">活动玩法</span>：<br>
+                    1. 幼儿扮演小兔，从起点双脚跳跃到终点拔一根萝卜。<br>
+                    2. 听到“大灰狼来了”信号，迅速跳回“家”（起点圆圈内）。<br>
+                    3. 被抓到的小兔暂停一次游戏。<br><br>
+                    📝 <span class="highlight">规则</span>：<br>
+                    1. 必须双脚同时起跳。<br>
+                    2. 听到信号后才可回“家”。<br><br>
+                    🗣 <span class="highlight">指导要点</span>：<br>
+                    关注幼儿跳跃时落地是否轻巧，提醒“膝盖弯一弯”，注意控制运动量（小班易疲劳）。`,
+            mnemonic: '💡 <strong>设计逻辑</strong>：小班情节简单，动作单一（跳），有角色（兔/狼）和信号（狼来了）。',
+            important: false,
+            isLesson: true
+        }, {
+            id: 104,
+            category: '教案',
+            title: '📝 体育游戏教案大纲（示例2：中班“勇敢的小司机”）',
+            content: `🎯 <span class="highlight">活动目标</span>：<br>
+                    1. 练习听信号变速跑、绕障碍跑。<br>
+                    2. 发展身体灵敏性和协调性。<br>
+                    3. 培养遵守交通规则的意识。<br><br>
+                    🛠 <span class="highlight">活动准备</span>：<br>
+                    1. 方向盘（或用纸板自制）若干。<br>
+                    2. 障碍物（小旗、锥形桶）若干，红绿灯指示牌。<br><br>
+                    🎮 <span class="highlight">活动玩法</span>：<br>
+                    1. 幼儿手握方向盘扮演小司机，在场地上自由行驶。<br>
+                    2. 教师出示红绿灯：红灯停，绿灯行，黄灯减速。<br>
+                    3. 设置“弯道”、“窄路”障碍物，要求绕行不碰撞。<br>
+                    4. 可增加“加油”情节，听到“加油”指令加速跑。<br><br>
+                    📝 <span class="highlight">规则</span>：<br>
+                    1. 必须按照信号灯行动。<br>
+                    2. 不碰撞他人和障碍物。<br><br>
+                    🗣 <span class="highlight">指导要点</span>：<br>
+                    重点观察幼儿对信号的反应速度，提醒“注意避让”，中大班可增加“警察”角色。`,
+            mnemonic: '💡 <strong>设计逻辑</strong>：中班动作增多（跑、绕、变速），加入社会规则（交通信号），有一定合作性。',
+            important: false,
+            isLesson: true
+        }, {
+            id: 105,
+            category: '教案',
+            title: '📝 体育游戏教案大纲（示例3：大班“夺旗接力赛”）',
+            content: `🎯 <span class="highlight">活动目标</span>：<br>
+                    1. 综合练习跑、跳、钻、爬等基本动作。<br>
+                    2. 发展团队合作和竞争意识。<br>
+                    3. 敢于挑战，勇于克服困难。<br><br>
+                    🛠 <span class="highlight">活动准备</span>：<br>
+                    1. 接力棒、小旗、钻圈、平衡木、体操垫。<br>
+                    2. 将场地划分为“草地（垫子爬）”、“山洞（钻圈）”、“小桥（平衡木）”、“冲刺区（跑）”。<br><br>
+                    🎮 <span class="highlight">活动玩法</span>：<br>
+                    1. 幼儿分成两组，每组4-5人，站在起点。<br>
+                    2. 第一位队员手持接力棒，依次完成：钻过山洞→爬过草地→走过小桥→跑到终点夺旗。<br>
+                    3. 夺旗后跑回起点，将接力棒交给下一位队友。<br>
+                    4. 最先完成接力夺旗的队伍获胜。<br><br>
+                    📝 <span class="highlight">规则</span>：<br>
+                    1. 必须按顺序通过每个障碍，漏掉障碍需返回重做。<br>
+                    2. 交接棒时必须手递手，不可抛扔。<br><br>
+                    🗣 <span class="highlight">指导要点</span>：<br>
+                    强调安全，检查器械稳固性。引导幼儿为本队加油，正确看待输赢。`,
+            mnemonic: '💡 <strong>设计逻辑</strong>：大班综合性强，有明确竞争和团队合作，动作复杂（组合动作）。',
+            important: false,
+            isLesson: true
+        }];
+
+        // 补全未定义测验的条目（基于书本内容回退）
+        const fullData = [...data];
+        fullData.forEach(item => {
+            if (!item.quiz && !item.isLesson) {
+                const plainContent = item.content.replace(/<[^>]*>/g, '');
+                const sentences = plainContent.split(/[。；、\n]/).filter(s => s.trim().length > 4);
+                const firstSentence = sentences.length > 0 ? sentences[0].trim() : item.title;
+                const others = fullData.filter(d => d.id !== item.id && !d.isLesson).map(d => {
+                    const p = d.content ? d.content.replace(/<[^>]*>/g, '') : '';
+                    return p.split(/[。；、\n]/).filter(s => s.trim().length > 4)[0] || d.title;
+                }).filter(s => s && s.length > 4);
+                const shuffled = others.sort(() => Math.random() - 0.5);
+                const distractors = shuffled.slice(0, 3);
+                while (distractors.length < 3) {
+                    distractors.push('以上都不是书中内容');
+                }
+                const options = [firstSentence, ...distractors].sort(() => Math.random() - 0.5);
+                const correctText = options[0];
+                item.quiz = {
+                    question: `关于“${item.title}”，以下哪项表述与书中一致？`,
+                    options: options.map((opt, idx) => String.fromCharCode(65 + idx) + '. ' + opt),
+                    correct: options[0],
+                    explanation: `✅ <strong>正确选项：</strong>“${correctText}”<br><br>其他选项为干扰项，请查看卡片原文。`
+                };
+                item.quiz._rawOptions = options;
+                item.quiz._correctText = correctText;
+            }
+        });
+
+        // ============================================================
+        //  2. 应用状态
+        // ============================================================
+        let state = {
+            filtered: [...fullData],
+            mastered: new Set(),
+            search: '',
+            filter: 'all',
+            quizItems: [],
+            quizIndex: 0,
+            quizAnswered: false,
+            quizTotal: 10,
+        };
+
+        // ============================================================
+        //  3. DOM 引用
+        // ============================================================
+        const grid = document.getElementById('cardGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const totalCount = document.getElementById('totalCount');
+        const importantCount = document.getElementById('importantCount');
+        const masteredCount = document.getElementById('masteredCount');
+
+        const quizModal = document.getElementById('quizModal');
+        const quizClose = document.getElementById('quizClose');
+        const quizBtn = document.getElementById('quizBtn');
+        const quizQuestion = document.getElementById('quizQuestion');
+        const quizOptions = document.getElementById('quizOptions');
+        const quizResult = document.getElementById('quizResult');
+        const quizNext = document.getElementById('quizNext');
+        const quizReset = document.getElementById('quizReset');
+        const quizProgress = document.getElementById('quizProgress');
+
+        // ============================================================
+        //  4. 渲染函数
+        // ============================================================
+        function render() {
+            const list = state.filtered;
+            const totalLesson = fullData.filter(d => d.isLesson).length;
+            totalCount.textContent = fullData.length - totalLesson;
+            importantCount.textContent = fullData.filter(d => d.important).length;
+            masteredCount.textContent = state.mastered.size;
+
+            if (list.length === 0) {
+                grid.innerHTML =
+                    `<div class="empty"><div class="big">🔍</div><p>没有找到匹配的内容，试试其他关键词吧</p></div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map(item => {
+                const isMastered = state.mastered.has(item.id);
+                const isImportant = item.important;
+                const isLesson = item.isLesson || false;
+                let badgeHtml = '';
+                if (isImportant) badgeHtml += '<span class="badge important">⭐ 重点</span>';
+                if (isMastered) badgeHtml += '<span class="badge mastered">✅ 已掌握</span>';
+                if (isLesson) badgeHtml += '<span class="badge lesson">📝 教案</span>';
+
+                return `
+                    <div class="card" data-id="${item.id}">
+                        <div class="card-inner">
+                            <div class="card-face card-front">
+                                ${badgeHtml}
+                                <span class="tag ${isLesson ? 'yellow' : getCategoryTag(item.category)}">${isLesson ? '教案' : item.category}</span>
+                                <h3>${item.title}</h3>
+                                <div class="hint">👆 点击查看详情 ${isLesson ? '（教案大纲）' : ''}</div>
+                                <div class="flip-icon">🔄</div>
+                            </div>
+                            <div class="card-face card-back">
+                                <div class="back-title">
+                                    <span>📌 ${item.title}</span>
+                                    <span class="tag ${isLesson ? 'yellow' : getCategoryTag(item.category)}">${isLesson ? '教案' : item.category}</span>
+                                </div>
+                                <div class="back-body">
+                                    ${item.content}
+                                    ${item.mnemonic ? `<div class="mnemonic">${item.mnemonic}</div>` : ''}
+                                </div>
+                                <div class="card-actions">
+                                    <button class="master-btn ${isMastered ? 'mastered' : ''}" data-id="${item.id}">
+                                        ${isMastered ? '✅ 已掌握' : '☑️ 标记掌握'}
+                                    </button>
+                                    <button class="card-flip-btn" data-id="${item.id}">↩️ 翻回</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('button')) return;
+                    this.classList.toggle('flipped');
+                });
+            });
+
+            document.querySelectorAll('.master-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = Number(this.dataset.id);
+                    if (state.mastered.has(id)) {
+                        state.mastered.delete(id);
+                    } else {
+                        state.mastered.add(id);
+                    }
+                    render();
+                });
+            });
+
+            document.querySelectorAll('.card-flip-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.card');
+                    if (card) card.classList.remove('flipped');
+                });
+            });
+        }
+
+        function getCategoryTag(cat) {
+            const map = { '游戏导论': 'purple', '角色游戏': 'pink', '表演游戏': 'pink', '结构游戏': 'green', '体育游戏': 'green',
+                '智力游戏': 'purple', '其他游戏': 'blue' };
+            return map[cat] || 'blue';
+        }
+
+        // ============================================================
+        //  5. 筛选 & 搜索
+        // ============================================================
+        function applyFilters() {
+            const search = state.search.trim().toLowerCase();
+            const filter = state.filter;
+            state.filtered = fullData.filter(item => {
+                let match = true;
+                if (search) {
+                    const inTitle = item.title.toLowerCase().includes(search);
+                    const inContent = item.content.toLowerCase().includes(search);
+                    const inCategory = item.category ? item.category.includes(search) : false;
+                    match = inTitle || inContent || inCategory;
+                }
+                if (!match) return false;
+                if (filter === 'all') return true;
+                if (filter === 'important') return item.important === true;
+                if (filter === '教案') return item.isLesson === true;
+                return item.category === filter;
+            });
+            render();
+        }
+
+        searchInput.addEventListener('input', function() {
+            state.search = this.value;
+            applyFilters();
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                state.filter = this.dataset.filter;
+                applyFilters();
+            });
+        });
+
+        // ============================================================
+        //  6. 自测模式
+        // ============================================================
+        function generateQuiz() {
+            const importantItems = fullData.filter(d => d.important && !d.isLesson);
+            const normalItems = fullData.filter(d => !d.important && !d.isLesson);
+            let pool = [...importantItems];
+            if (pool.length < state.quizTotal) {
+                const shuffledNormal = [...normalItems].sort(() => Math.random() - 0.5);
+                pool = pool.concat(shuffledNormal.slice(0, state.quizTotal - pool.length));
+            } else {
+                pool = pool.sort(() => Math.random() - 0.5).slice(0, state.quizTotal);
+            }
+            while (pool.length < state.quizTotal) {
+                const extra = fullData.filter(d => !pool.includes(d) && !d.isLesson);
+                if (extra.length === 0) break;
+                pool.push(extra[Math.floor(Math.random() * extra.length)]);
+            }
+
+            state.quizItems = pool.map(item => {
+                const q = item.quiz;
+                let options = q.options;
+                let correct = q.correct;
+                let explanation = q.explanation || '请参考卡片原文。';
+                if (q._rawOptions) {
+                    const idx = q._rawOptions.indexOf(q._correctText);
+                    if (idx !== -1) {
+                        options = q._rawOptions.map((t, i) => String.fromCharCode(65 + i) + '. ' + t);
+                        correct = options[idx];
+                    }
+                }
+                return {
+                    id: item.id,
+                    title: item.title,
+                    question: q.question || `关于“${item.title}”，以下哪项与书中一致？`,
+                    options: options,
+                    correct: correct,
+                    explanation: explanation,
+                    content: item.content,
+                    mnemonic: item.mnemonic || '',
+                    category: item.category
+                };
+            });
+
+            state.quizIndex = 0;
+            state.quizAnswered = false;
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            const items = state.quizItems;
+            if (items.length === 0 || state.quizIndex >= items.length) {
+                quizQuestion.textContent = '🎉 完成所有题目！点击"重新开始"再来一次。';
+                quizOptions.innerHTML = '';
+                quizResult.className = 'result-box';
+                quizResult.textContent = '';
+                quizProgress.textContent = `已完成 ${items.length} / ${items.length} 题`;
+                quizNext.textContent = '🏁 完成';
+                return;
+            }
+
+            const q = items[state.quizIndex];
+            quizQuestion.textContent = q.question;
+            quizProgress.textContent = `第 ${state.quizIndex + 1} / ${items.length} 题（${q.category || '综合'}）`;
+            quizNext.textContent = state.quizIndex < items.length - 1 ? '下一题 →' : '查看结果 🏁';
+
+            quizOptions.innerHTML = q.options.map((opt, idx) => `
+                <label data-idx="${idx}">
+                    <input type="radio" name="quizOpt" value="${opt}" />
+                    ${opt}
+                </label>
+            `).join('');
+
+            quizResult.className = 'result-box';
+            quizResult.textContent = '';
+            state.quizAnswered = false;
+            document.querySelectorAll('input[name="quizOpt"]').forEach(r => r.checked = false);
+
+            document.querySelectorAll('input[name="quizOpt"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (state.quizAnswered) return;
+                    const selected = this.value;
+                    const isCorrect = selected === q.correct;
+                    state.quizAnswered = true;
+
+                    quizResult.className = `result-box show ${isCorrect ? 'correct' : 'wrong'}`;
+                    let explanationHtml = q.explanation || '请参考书本原文。';
+                    if (!explanationHtml.includes('逐项解析')) {
+                        explanationHtml = `<strong>${isCorrect ? '✅ 回答正确！' : '❌ 回答错误'}</strong><br>正确答案是：「${q.correct}」<br><br>` +
+                            explanationHtml;
+                    } else {
+                        explanationHtml = `<strong>${isCorrect ? '✅ 回答正确！' : '❌ 回答错误'}</strong><br><br>` +
+                            explanationHtml;
+                    }
+                    if (q.mnemonic) {
+                        explanationHtml += `<br><div style="background:var(--blue-light);padding:10px;border-radius:8px;">🧠 ${q.mnemonic}</div>`;
+                    }
+
+                    quizResult.innerHTML = `
+                        ${explanationHtml}
+                        <br>
+                        <details style="margin-top:10px;font-size:14px;">
+                            <summary style="cursor:pointer;font-weight:500;">📖 查看书本原文</summary>
+                            <div style="margin-top:8px;padding:10px;background:var(--bg);border-radius:10px;line-height:1.8;">
+                                ${q.content}
+                            </div>
+                        </details>
+                    `;
+
+                    document.querySelectorAll('.options label').forEach(label => {
+                        const val = label.querySelector('input').value;
+                        if (val === q.correct) label.classList.add('correct');
+                        else if (val === selected && !isCorrect) label.classList.add('wrong');
+                    });
+                });
+            });
+        }
+
+        function nextQuiz() {
+            if (!state.quizAnswered) {
+                const radios = document.querySelectorAll('input[name="quizOpt"]');
+                let checked = false;
+                radios.forEach(r => { if (r.checked) checked = true; });
+                if (!checked) {
+                    quizResult.className = 'result-box show wrong';
+                    quizResult.innerHTML = '⚠️ 请先选择一个选项再继续。';
+                    return;
+                }
+            }
+            state.quizIndex++;
+            if (state.quizIndex >= state.quizItems.length) {
+                const total = state.quizItems.length;
+                const correctCount = document.querySelectorAll('.options label.correct').length;
+                quizQuestion.textContent = `🎉 自测完成！正确率：${correctCount}/${total}`;
+                quizOptions.innerHTML = '';
+                quizResult.className = 'result-box show correct';
+                quizResult.innerHTML = `
+                    <strong>${correctCount === total ? '🌟 太棒了！全部答对！' : '💪 继续加油！'}</strong><br>
+                    <span style="font-size:14px;color:var(--text-light);">
+                        ${correctCount === total ? '所有重点均已掌握！' : `答对了 ${correctCount} 题，再翻看卡片巩固。`}
+                    </span>
+                `;
+                quizProgress.textContent = `已完成 ${total} / ${total} 题`;
+                quizNext.textContent = '🏁 完成';
+                return;
+            }
+            showQuizQuestion();
+        }
+
+        // ============================================================
+        //  7. 自测模态控制
+        // ============================================================
+        quizBtn.addEventListener('click', function() {
+            generateQuiz();
+            quizModal.classList.add('open');
+        });
+
+        quizClose.addEventListener('click', function() {
+            quizModal.classList.remove('open');
+        });
+
+        quizModal.addEventListener('click', function(e) {
+            if (e.target === this) quizModal.classList.remove('open');
+        });
+
+        quizNext.addEventListener('click', nextQuiz);
+
+        quizReset.addEventListener('click', function() {
+            generateQuiz();
+            document.querySelectorAll('.options label').forEach(l => {
+                l.classList.remove('correct', 'wrong');
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && quizModal.classList.contains('open')) {
+                nextQuiz();
+            }
+            if (e.key === 'Escape' && quizModal.classList.contains('open')) {
+                quizModal.classList.remove('open');
+            }
+        });
+
+        // ============================================================
+        //  8. 初始化
+        // ============================================================
+        applyFilters();
+
+        // 彩蛋
+        document.querySelector('.stats .num#masteredCount')?.addEventListener('click', function() {
+            if (state.mastered.size === 0) return;
+            createConfetti();
+        });
+
+        function createConfetti() {
+            const container = document.createElement('div');
+            container.className = 'confetti-container';
+            document.body.appendChild(container);
+            const colors = ['#c9a9a6', '#b8a9c9', '#a8b5c0', '#b5c4b1', '#e3cecb', '#d5cce6'];
+            for (let i = 0; i < 60; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti';
+                el.style.left = Math.random() * 100 + '%';
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                el.style.width = (Math.random() * 8 + 4) + 'px';
+                el.style.height = (Math.random() * 8 + 4) + 'px';
+                el.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                el.style.animationDelay = (Math.random() * 1.2) + 's';
+                el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                container.appendChild(el);
+            }
+            setTimeout(() => container.remove(), 3500);
+        }
+
+        console.log('📚 学前儿童游戏 · 终极精析版已加载！所有内容均校准书本，含记忆技巧和教案大纲。');
+    </script>
+
+</body>
+</html>
